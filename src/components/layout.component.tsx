@@ -7,6 +7,13 @@ import {
   AlertDialogOverlay,
   Box,
   Button,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
   Flex,
   Grid,
   GridItem,
@@ -20,7 +27,12 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import { PlusIcon, TrashIcon } from '@radix-ui/react-icons';
+import {
+  Cross2Icon,
+  HamburgerMenuIcon,
+  PlusIcon,
+  TrashIcon,
+} from '@radix-ui/react-icons';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
@@ -37,6 +49,12 @@ const Layout = ({ children }: any) => {
   const [toRemoveId, setToRemoveId] = useState('');
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isDrawerOpen,
+    onOpen: onDrawerOpen,
+    onClose: onDrawerClose,
+  } = useDisclosure();
+
   const cancelRef = useRef() as any;
 
   const router = useRouter();
@@ -99,6 +117,49 @@ const Layout = ({ children }: any) => {
     }
   }, []);
 
+  const MenuList = () => {
+    return (
+      <VStack gap={4} alignItems="flex-start">
+        <HStack w={'100%'} justifyContent="space-between">
+          <Text fontSize={'3xl'}>Listas</Text>
+          <Button p={0} onClick={() => setShow(true)}>
+            <Icon fontSize={'xl'} as={PlusIcon} />
+          </Button>
+        </HStack>
+        {lists.map((item, i) => {
+          return (
+            <Flex
+              justifyContent={'space-between'}
+              alignItems="center"
+              w="100%"
+              key={i}
+            >
+              <NextLink href={`/${item.id}`} key={i}>
+                <Link>
+                  <Text fontSize={'xl'}>{item.name}</Text>
+                </Link>
+              </NextLink>
+              <Button
+                p={0}
+                variant="ghost"
+                onClick={() => handleDeleteButton(item.id)}
+              >
+                <Icon fontSize={'xl'} as={TrashIcon} />
+              </Button>
+            </Flex>
+          );
+        })}
+        {show && (
+          <Input
+            variant="flushed"
+            placeholder="Nome da lista"
+            onKeyDown={(e) => handleEnterPress(e)}
+          />
+        )}
+      </VStack>
+    );
+  };
+
   return (
     <>
       <Grid
@@ -115,44 +176,7 @@ const Layout = ({ children }: any) => {
             p="4"
             bgColor="#20212C"
           >
-            <VStack gap={4} alignItems="flex-start">
-              <HStack w={'100%'} justifyContent="space-between">
-                <Text fontSize={'3xl'}>Listas</Text>
-                <Button p={0} onClick={() => setShow(true)}>
-                  <Icon fontSize={'xl'} as={PlusIcon} />
-                </Button>
-              </HStack>
-              {lists.map((item, i) => {
-                return (
-                  <Flex
-                    justifyContent={'space-between'}
-                    alignItems="center"
-                    w="100%"
-                    key={i}
-                  >
-                    <NextLink href={`/${item.id}`} key={i}>
-                      <Link>
-                        <Text fontSize={'xl'}>{item.name}</Text>
-                      </Link>
-                    </NextLink>
-                    <Button
-                      p={0}
-                      variant="ghost"
-                      onClick={() => handleDeleteButton(item.id)}
-                    >
-                      <Icon fontSize={'xl'} as={TrashIcon} />
-                    </Button>
-                  </Flex>
-                );
-              })}
-              {show && (
-                <Input
-                  variant="flushed"
-                  placeholder="Nome da lista"
-                  onKeyDown={(e) => handleEnterPress(e)}
-                />
-              )}
-            </VStack>
+            <MenuList />
           </GridItem>
         </Hide>
         <GridItem
@@ -162,7 +186,13 @@ const Layout = ({ children }: any) => {
           gridRowEnd={-2}
           bgColor="#20212C"
         >
-          <Box></Box>
+          <Show breakpoint="(max-width: 760px)">
+            <Flex alignItems={'center'} h="100%" p={'0 12px'}>
+              <Button colorScheme="teal" onClick={onDrawerOpen} variant="ghost">
+                <Icon as={HamburgerMenuIcon} fontSize="24" />
+              </Button>
+            </Flex>
+          </Show>
         </GridItem>
 
         <GridItem
@@ -176,7 +206,6 @@ const Layout = ({ children }: any) => {
           <Grid
             templateRows={['150px  1fr']}
             templateColumns="1fr"
-            height={'100%'}
             gap="12px"
             justifyItems={'center'}
             alignContent="center"
@@ -219,6 +248,19 @@ const Layout = ({ children }: any) => {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
+
+      <Drawer isOpen={isDrawerOpen} placement="left" onClose={onDrawerClose}>
+        <DrawerOverlay />
+        <DrawerContent bgColor={'#20212C'}>
+          <Box>
+            <DrawerCloseButton as={Cross2Icon} color="white" />
+          </Box>
+          <DrawerHeader>Create a new account</DrawerHeader>
+          <DrawerBody>
+            <MenuList />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };

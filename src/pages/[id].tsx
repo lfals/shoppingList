@@ -242,7 +242,14 @@ const List: NextPage = ({ children }: any) => {
             </Button>
           </Flex>
           <VStack py={4} gap="4" h={'100%'}>
-            <Accordion allowMultiple w={'100%'} style={{ border: 'none' }}>
+            <Accordion
+              allowMultiple
+              w={'100%'}
+              height={['55vh', '60vh']}
+              style={{ border: 'none' }}
+              overflowY={'auto'}
+              pr="4"
+            >
               {items?.map((product: IProduct, i) => {
                 return (
                   <AccordionItem
@@ -259,7 +266,15 @@ const List: NextPage = ({ children }: any) => {
                       h={'64px'}
                     >
                       <Flex flex="1" justifyContent={'space-between'} pr="4">
-                        <Text>{product.name}</Text>
+                        <Text
+                          textOverflow={'ellipsis'}
+                          whiteSpace="nowrap"
+                          overflow={'hidden'}
+                          w={['100px', '150px', '200px', '300px']}
+                          textAlign="start"
+                        >
+                          {product.name}
+                        </Text>
                         <Flex gap={4}>
                           <Text>{product.price}</Text>
                         </Flex>
@@ -268,9 +283,14 @@ const List: NextPage = ({ children }: any) => {
                     </AccordionButton>
 
                     <AccordionPanel pb={4} borderRadius={'0 0 12px 12px'}>
-                      <Flex gap={4} alignItems="center" wrap={'wrap'}>
+                      <Flex
+                        gap={4}
+                        alignItems="center"
+                        justifyContent={'center'}
+                        flexDir={['column', 'column', 'row']}
+                      >
                         <Image
-                          boxSize="85px"
+                          boxSize={['200px', '85px']}
                           objectFit="contain"
                           borderRadius={'12px'}
                           src={product.image}
@@ -278,7 +298,11 @@ const List: NextPage = ({ children }: any) => {
                         />
                         <Box width={'100%'}>
                           <Link href={product.link} target="_blank">
-                            <Flex alignItems={'center'} gap="18">
+                            <Flex
+                              alignItems={'center'}
+                              justifyContent={['space-between', 'flex-start']}
+                              gap="18"
+                            >
                               <Text fontSize={'3xl'}>{product.store}</Text>
                               <Icon
                                 color={'white'}
@@ -291,23 +315,25 @@ const List: NextPage = ({ children }: any) => {
                             textOverflow={'ellipsis'}
                             whiteSpace="nowrap"
                             overflow={'hidden'}
-                            w={'300px'}
+                            w={['200px', '250px', '200px', '300px']}
                           >
                             {product.link}
                           </Text>
                         </Box>
-                        <Button
-                          onClick={() => handleEdit(product.id)}
-                          variant="ghost"
-                        >
-                          <Icon fontSize={'xl'} as={Pencil2Icon} />
-                        </Button>
-                        <Button
-                          onClick={() => handleDeleteItem(product.id)}
-                          variant="ghost"
-                        >
-                          <Icon fontSize={'xl'} as={TrashIcon} />
-                        </Button>
+                        <Flex>
+                          <Button
+                            onClick={() => handleEdit(product.id)}
+                            variant="ghost"
+                          >
+                            <Icon fontSize={'xl'} as={Pencil2Icon} />
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteItem(product.id)}
+                            variant="ghost"
+                          >
+                            <Icon fontSize={'xl'} as={TrashIcon} />
+                          </Button>
+                        </Flex>
                       </Flex>
                     </AccordionPanel>
                   </AccordionItem>
