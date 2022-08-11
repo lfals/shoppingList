@@ -42,6 +42,7 @@ import {
 } from '@radix-ui/react-icons';
 import { useSetRecoilState } from 'recoil';
 import { listRecoilContext } from '../hooks/list.hook';
+import Head from 'next/head';
 
 interface IList {
   id?: string;
@@ -92,7 +93,7 @@ const List: NextPage = ({ children }: any) => {
 
   function handlePriceSum(data: Array<any>) {
     const initialValue = 0;
-    
+
     const totalPrice = data.reduce(
       (previousValue: any, currentValue: any) =>
         previousValue +
@@ -222,10 +223,15 @@ const List: NextPage = ({ children }: any) => {
 
     setLocalItems(items);
     setItems(storageList[0]?.items);
+
   }, [router.query.id]);
 
   return (
     <>
+      <Head>
+        <title>{list?.name}</title>
+        <meta name="description" content="" />
+      </Head>
       <Layout>
         <Box maxW={'800px'} w="100%">
           <Text fontSize={'2xl'} fontWeight="bold">
