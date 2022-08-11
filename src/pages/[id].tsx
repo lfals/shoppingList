@@ -205,10 +205,12 @@ const List: NextPage = ({ children }: any) => {
     }
     const items = JSON.parse(localItems);
     const storageList = items.filter((item: IList) => item.id === id);
-
+    if (!storageList[0]) {
+      return;
+    }
     setList(storageList[0]);
 
-    const totalPrice = handlePriceSum(storageList[0]?.items);
+    const totalPrice = handlePriceSum(storageList[0].items);
 
     setPriceSum(treatCurrency(totalPrice?.toString()));
 
