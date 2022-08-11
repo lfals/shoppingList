@@ -20,6 +20,7 @@ import {
   Hide,
   HStack,
   Icon,
+  Image,
   Input,
   Link,
   list,
@@ -78,6 +79,7 @@ const Layout = ({ children }: any) => {
     const result = new Intl.NumberFormat('pt-BR', options).format(
       parseFloat(value) / 100
     );
+
     return `R$ ${result}`;
   }
 
@@ -144,7 +146,7 @@ const Layout = ({ children }: any) => {
       priceArray.reduce(
         (previousValue: any, currentValue: any) =>
           previousValue + parseInt(
-            currentValue.replace('.', '').replace(',', '').replace('R$', '')
+            currentValue.replaceAll('.', '').replaceAll(',', '').replace('R$', '')
           ),
         initialValue
       )
@@ -208,6 +210,7 @@ const Layout = ({ children }: any) => {
     <>
       <Grid
         h="100vh"
+        overflowY={'hidden'}
         templateRows="80px 1fr"
         templateColumns={['1fr', '300px 1fr', '300px 1fr']}
       >
@@ -230,13 +233,17 @@ const Layout = ({ children }: any) => {
           gridRowEnd={-2}
           bgColor="#20212C"
         >
-          <Show breakpoint="(max-width: 760px)">
-            <Flex alignItems={'center'} h="100%" p={'0 12px'}>
-              <Button colorScheme="teal" onClick={onDrawerOpen} variant="ghost">
-                <Icon as={HamburgerMenuIcon} fontSize="24" />
-              </Button>
-            </Flex>
-          </Show>
+          <HStack h={'100%'} px={3} justifyContent="space-between">
+            <Image src='/assets/images/logo.png' style={{ filter: 'brightness(0) invert(1)'}} alt='logo' />
+            <Show breakpoint="(max-width: 760px)">
+              <Flex alignItems={'center'} h="100%" p={'0 12px'}>
+                <Button colorScheme="teal" onClick={onDrawerOpen} variant="ghost">
+                  <Icon as={HamburgerMenuIcon} fontSize="24" />
+                </Button>
+              </Flex>
+            </Show>
+          </HStack>
+
         </GridItem>
 
         <GridItem
@@ -297,10 +304,10 @@ const Layout = ({ children }: any) => {
         <DrawerOverlay />
         <DrawerContent bgColor={'#20212C'}>
           <Box>
-            <DrawerCloseButton as={Cross2Icon} color="white" />
+            <DrawerCloseButton as={Cross2Icon} color="white" mt={2} mr={1} />
           </Box>
-          <DrawerHeader>Create a new account</DrawerHeader>
-          <DrawerBody>
+          <DrawerHeader></DrawerHeader>
+          <DrawerBody mt={4} py={5} px={3}>
             <MenuList />
           </DrawerBody>
         </DrawerContent>

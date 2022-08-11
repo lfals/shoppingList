@@ -83,7 +83,6 @@ const List: NextPage = ({ children }: any) => {
 
   function treatCurrency(value: string) {
     value = value?.replace('.', '').replace(',', '').replace(/\D/g, '');
-
     const options = { minimumFractionDigits: 2 };
     const result = new Intl.NumberFormat('pt-BR', options).format(
       parseFloat(value) / 100
@@ -93,12 +92,12 @@ const List: NextPage = ({ children }: any) => {
 
   function handlePriceSum(data: Array<any>) {
     const initialValue = 0;
-
+    
     const totalPrice = data.reduce(
       (previousValue: any, currentValue: any) =>
         previousValue +
-        parseInt(
-          currentValue.price.replace('.', '').replace(',', '').replace('R$', '')
+        parseFloat(
+          currentValue.price.replaceAll('.', '').replaceAll(',', '').replace('R$', '')
         ),
       initialValue
     );
