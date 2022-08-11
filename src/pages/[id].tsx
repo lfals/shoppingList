@@ -27,7 +27,7 @@ import {
   Text,
   useDisclosure,
   VStack,
-  Tooltip
+  Tooltip,
 } from '@chakra-ui/react';
 import { Field, Formik, useFormik } from 'formik';
 import type { NextPage } from 'next';
@@ -43,6 +43,7 @@ import {
 import { useSetRecoilState } from 'recoil';
 import { listRecoilContext } from '../hooks/list.hook';
 import Head from 'next/head';
+import searchImage from '../functions/search.function';
 
 interface IList {
   id?: string;
@@ -55,7 +56,7 @@ interface IProduct {
   name: string;
   store: string;
   link: string;
-  image: string;
+  image?: string;
   price: string;
 }
 
@@ -77,7 +78,6 @@ const List: NextPage = ({ children }: any) => {
     id: '',
     name: '',
     store: '',
-    image: '',
     link: '',
     price: '',
   };
@@ -98,7 +98,10 @@ const List: NextPage = ({ children }: any) => {
       (previousValue: any, currentValue: any) =>
         previousValue +
         parseFloat(
-          currentValue.price.replaceAll('.', '').replaceAll(',', '').replace('R$', '')
+          currentValue.price
+            .replaceAll('.', '')
+            .replaceAll(',', '')
+            .replace('R$', '')
         ),
       initialValue
     );
@@ -111,6 +114,8 @@ const List: NextPage = ({ children }: any) => {
   }
 
   function handleSaveItem(values: any) {
+    console.log(values);
+
     console.log(itemToEdit, values);
     if (itemToEdit.id !== '') {
       editItem(values);
@@ -119,11 +124,14 @@ const List: NextPage = ({ children }: any) => {
     }
   }
 
-  function createItem(values: any) {
+  async function createItem(values: any) {
     if (!localItemsArray) {
       console.error('storage vazio, fez merda aí');
       return;
     }
+    console.log(price);
+
+    const imageLink = await searchImage(values.name);
 
     const mapped = localItemsArray.map((item: IList) => {
       if (item.id === id) {
@@ -133,6 +141,7 @@ const List: NextPage = ({ children }: any) => {
             id: uuid(),
             ...values,
             price: price,
+            image: imageLink,
           },
         ];
       }
@@ -147,7 +156,7 @@ const List: NextPage = ({ children }: any) => {
     setLocalItems(mapped);
     setItems(storageList[0].items);
     localStorage.setItem(ENV, JSON.stringify(mapped));
-    setListRecoil(mapped)
+    setListRecoil(mapped);
     setPrice('');
     onClose();
   }
@@ -176,7 +185,7 @@ const List: NextPage = ({ children }: any) => {
 
     setPriceSum(treatCurrency(totalPrice?.toString()));
     localStorage.setItem(ENV, JSON.stringify(newArray));
-    setListRecoil(newArray)
+    setListRecoil(newArray);
     onClose();
   }
 
@@ -192,7 +201,7 @@ const List: NextPage = ({ children }: any) => {
 
     localStorage.setItem(ENV, JSON.stringify(newArray));
     setItems(newItems);
-    setListRecoil(newArray)
+    setListRecoil(newArray);
   }
 
   function handleEdit(productId: string) {
@@ -223,7 +232,6 @@ const List: NextPage = ({ children }: any) => {
 
     setLocalItems(items);
     setItems(storageList[0]?.items);
-
   }, [router.query.id]);
 
   return (
@@ -372,7 +380,6 @@ const List: NextPage = ({ children }: any) => {
           initialValues={{
             name: itemToEdit?.name,
             store: itemToEdit?.store,
-            image: itemToEdit?.image,
             link: itemToEdit?.link,
             price: itemToEdit?.price,
           }}
@@ -395,15 +402,6 @@ const List: NextPage = ({ children }: any) => {
                         name="name"
                         id="name"
                         required
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <FormLabel>Imagem</FormLabel>
-                      <Field
-                        as={Input}
-                        placeholder="Imagem"
-                        name="image"
-                        id="image"
                       />
                     </FormControl>
                     <FormControl>

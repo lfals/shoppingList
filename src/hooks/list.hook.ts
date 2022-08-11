@@ -1,4 +1,4 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
 
 interface IList {
   id?: string;
@@ -16,6 +16,6 @@ interface IProduct {
 }
 
 export const listRecoilContext = atom({
-  key: "list",
+  key: 'contexList',
   default: [] as IList[],
 });
