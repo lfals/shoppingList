@@ -186,11 +186,13 @@ const Layout = ({ children }: any) => {
           gridRowEnd={-2}
           bgColor="#20212C"
         >
-          <Flex alignItems={'center'} h="100%" p={'0 12px'}>
-            <Button colorScheme="teal" onClick={onDrawerOpen} variant="ghost">
-              <Icon as={HamburgerMenuIcon} fontSize="24" />
-            </Button>
-          </Flex>
+          <Show breakpoint="(max-width: 760px)">
+            <Flex alignItems={'center'} h="100%" p={'0 12px'}>
+              <Button colorScheme="teal" onClick={onDrawerOpen} variant="ghost">
+                <Icon as={HamburgerMenuIcon} fontSize="24" />
+              </Button>
+            </Flex>
+          </Show>
         </GridItem>
 
         <GridItem
