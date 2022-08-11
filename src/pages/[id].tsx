@@ -27,6 +27,7 @@ import {
   Text,
   useDisclosure,
   VStack,
+  Tooltip
 } from '@chakra-ui/react';
 import { Field, Formik, useFormik } from 'formik';
 import type { NextPage } from 'next';
@@ -39,6 +40,8 @@ import {
   Pencil2Icon,
   TrashIcon,
 } from '@radix-ui/react-icons';
+import { useRecoilState } from 'recoil';
+import { listRecoil } from '../hooks/list.hook';
 
 interface IList {
   id?: string;
@@ -57,7 +60,7 @@ interface IProduct {
 
 const List: NextPage = ({ children }: any) => {
   const router = useRouter();
-  const [list, setList] = useState({} as IList);
+  const [list, setList] = useRecoilState(listRecoil);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [price, setPrice] = useState('');
   const [priceSum, setPriceSum] = useState('');
@@ -84,7 +87,7 @@ const List: NextPage = ({ children }: any) => {
     const result = new Intl.NumberFormat('pt-BR', options).format(
       parseFloat(value) / 100
     );
-    return `R$${result}`;
+    return `R$ ${result}`;
   }
 
   function handlePriceSum(data: Array<any>) {
@@ -230,7 +233,7 @@ const List: NextPage = ({ children }: any) => {
           </Text>
         </Box>
         <Box maxW={'800px'} w="100%">
-          <Flex w={'100%'} justifyContent="flex-end">
+          <Flex w={'100%'} justifyContent="flex-start">
             <Button
               onClick={() => {
                 onOpen();
@@ -241,7 +244,7 @@ const List: NextPage = ({ children }: any) => {
               Adicionar
             </Button>
           </Flex>
-          <VStack py={4} gap="4" h={'100%'}>
+          <VStack py={4} gap="4" h={'auto'}>
             <Accordion
               allowMultiple
               w={'100%'}
@@ -257,7 +260,7 @@ const List: NextPage = ({ children }: any) => {
                     style={{ border: 'none' }}
                     mb="4"
                     bgColor={'#20212C'}
-                    borderRadius={'0 0 12px 12px'}
+                    borderRadius={'12px'}
                     w="100%"
                   >
                     <AccordionButton
@@ -266,15 +269,18 @@ const List: NextPage = ({ children }: any) => {
                       h={'64px'}
                     >
                       <Flex flex="1" justifyContent={'space-between'} pr="4">
-                        <Text
-                          textOverflow={'ellipsis'}
-                          whiteSpace="nowrap"
-                          overflow={'hidden'}
-                          w={['100px', '150px', '200px', '300px']}
-                          textAlign="start"
-                        >
-                          {product.name}
-                        </Text>
+                        <Tooltip label={product.name} placement="top-start">
+                          <Text
+                            textOverflow={'ellipsis'}
+                            whiteSpace="nowrap"
+                            overflow={'hidden'}
+                            w={['100px', '150px', '200px', '300px']}
+                            textAlign="start"
+                          >
+                            {product.name}
+                          </Text>
+                        </Tooltip>
+
                         <Flex gap={4}>
                           <Text>{product.price}</Text>
                         </Flex>

@@ -22,6 +22,7 @@ import {
   Icon,
   Input,
   Link,
+  list,
   Show,
   Text,
   useDisclosure,
@@ -41,12 +42,16 @@ import { uuid } from 'uuidv4';
 interface IList {
   id: string;
   name: string;
+  items: [{
+    price: string
+  }]
 }
 
 const Layout = ({ children }: any) => {
   const [show, setShow] = useState(false);
   const [lists, setLists] = useState([] as IList[]);
   const [toRemoveId, setToRemoveId] = useState('');
+  const [amount, setAmount] = useState('');
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -64,6 +69,14 @@ const Layout = ({ children }: any) => {
   function handleList(data: any) {
     localStorage.setItem(ENV, JSON.stringify(data));
     setLists(data);
+  }
+
+  function treatCurrency(value: string) {
+    const options = { minimumFractionDigits: 2 };
+    const result = new Intl.NumberFormat('pt-BR', options).format(
+      parseFloat(value) / 100
+    );
+    return `R$ ${result}`;
   }
 
   function handleEnterPress(e: any) {
@@ -115,48 +128,75 @@ const Layout = ({ children }: any) => {
     if (items) {
       setLists(JSON.parse(items));
     }
+    const initialValue = 0;
+    if (!items) return;
+
+    const priceArray = JSON.parse(items).map((list: any) => {
+      return list.items.map((item: any) => {
+        return item.price
+      })
+    }).flat(Infinity)
+    setAmount(
+      priceArray.reduce(
+        (previousValue: any, currentValue: any) =>
+          previousValue + parseInt(
+            currentValue.replace('.', '').replace(',', '').replace('R$', '')
+          ),
+        initialValue
+      )
+    )
   }, []);
 
   const MenuList = () => {
     return (
-      <VStack gap={4} alignItems="flex-start">
-        <HStack w={'100%'} justifyContent="space-between">
-          <Text fontSize={'3xl'}>Listas</Text>
-          <Button p={0} onClick={() => setShow(true)}>
-            <Icon fontSize={'xl'} as={PlusIcon} />
-          </Button>
-        </HStack>
-        {lists.map((item, i) => {
-          return (
-            <Flex
-              justifyContent={'space-between'}
-              alignItems="center"
-              w="100%"
-              key={i}
-            >
-              <NextLink href={`/${item.id}`} key={i}>
-                <Link>
-                  <Text fontSize={'xl'}>{item.name}</Text>
-                </Link>
-              </NextLink>
-              <Button
-                p={0}
-                variant="ghost"
-                onClick={() => handleDeleteButton(item.id)}
+      <VStack h={'100%'} justifyContent="space-between">
+        <VStack gap={4} w={'100%'} alignItems="flex-start">
+          <HStack w={'100%'} justifyContent="space-between">
+            <Text fontSize={'3xl'}>Listas</Text>
+            <Button p={0} onClick={() => setShow(true)}>
+              <Icon fontSize={'xl'} as={PlusIcon} />
+            </Button>
+          </HStack>
+          {lists.map((item, i) => {
+            return (
+              <Flex
+                justifyContent={'space-between'}
+                alignItems="center"
+                w="100%"
+                key={i}
               >
-                <Icon fontSize={'xl'} as={TrashIcon} />
-              </Button>
-            </Flex>
-          );
-        })}
-        {show && (
-          <Input
-            variant="flushed"
-            placeholder="Nome da lista"
-            onKeyDown={(e) => handleEnterPress(e)}
-          />
+                <NextLink href={`/${item.id}`} key={i}>
+                  <Link style={{ width: '100%' }}>
+                    <Text fontSize={'xl'}>{item.name}</Text>
+                  </Link>
+                </NextLink>
+                <Button
+                  p={0}
+                  variant="ghost"
+                  onClick={() => handleDeleteButton(item.id)}
+                >
+                  <Icon fontSize={'xl'} as={TrashIcon} />
+                </Button>
+              </Flex>
+            );
+          })}
+          {show && (
+            <Input
+              variant="flushed"
+              placeholder="Nome da lista"
+              onKeyDown={(e) => handleEnterPress(e)}
+            />
+          )}
+        </VStack>
+        {lists.length > 0 && (
+          <HStack w={'100%'} mt={'auto'} justifyContent="space-between">
+            <Text fontSize={'xl'}>Valor total:</Text>
+            <Text fontSize={'xl'}>{treatCurrency(amount)}</Text>
+          </HStack>
         )}
       </VStack>
+
+
     );
   };
 

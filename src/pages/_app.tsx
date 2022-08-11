@@ -10,6 +10,7 @@ import {
   Accordion,
   AccordionItem,
 } from '../styles/shakraui.component';
+import { RecoilRoot } from 'recoil';
 
 const theme = extendTheme({
   components: {
@@ -19,15 +20,17 @@ const theme = extendTheme({
     Button,
     FormLabel,
     Accordion,
-    AccordionItem,  
+    AccordionItem,
   },
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ChakraProvider theme={theme}>
-      <Component {...pageProps} />
-    </ChakraProvider>
+    <RecoilRoot>
+      <ChakraProvider theme={theme}>
+        <Component {...pageProps} />
+      </ChakraProvider>
+    </RecoilRoot>
   );
 }
 
