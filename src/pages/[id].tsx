@@ -132,6 +132,8 @@ const List: NextPage = ({ children }: any) => {
     );
 
     setLocalItems(mapped);
+    console.log(mapped);
+    
     setItems(storageList[0].items);
     localStorage.setItem('@shoppinglist', JSON.stringify(mapped));
     setPriceSum(treatCurrency(totalPrice?.toString()));

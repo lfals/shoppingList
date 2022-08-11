@@ -49,27 +49,24 @@ const Layout = ({ children }: any) => {
 
     if (e.key === 'Enter') {
       const id = uuid();
-      setLists((list) => {
-        localStorage.setItem(
-          '@shoppinglist',
-          JSON.stringify([
-            ...list,
-            {
-              id,
-              name,
-              items: [],
-            },
-          ])
-        );
-        return [
-          ...list,
-          {
-            id,
-            name,
-            items: [],
-          },
-        ];
-      });
+
+      const currentStorage = localStorage.getItem('@shoppinglist');
+      if (!currentStorage) {
+        return;
+      }
+      const parsedStorage = JSON.parse(currentStorage);
+
+      const newList = [
+        ...parsedStorage,
+        {
+          id,
+          name,
+          items: [],
+        },
+      ];
+
+      localStorage.setItem('@shoppinglist', JSON.stringify(newList));
+      setLists(newList);
       setShow(false);
     }
   }
