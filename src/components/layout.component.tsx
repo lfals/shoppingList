@@ -51,13 +51,28 @@ const Layout = ({ children }: any) => {
       const id = uuid();
 
       const currentStorage = localStorage.getItem('@shoppinglist');
-      if (!currentStorage) {
+
+      if (currentStorage) {
+        const parsedStorage = JSON.parse(currentStorage);
+
+        const newList = [
+          ...parsedStorage,
+          {
+            id,
+            name,
+            items: [],
+          },
+        ];
+
+        localStorage.setItem('@shoppinglist', JSON.stringify(newList));
+        setLists(newList);
+        setShow(false);
+
+        router.push(`/${id}`);
         return;
       }
-      const parsedStorage = JSON.parse(currentStorage);
 
       const newList = [
-        ...parsedStorage,
         {
           id,
           name,
@@ -65,6 +80,7 @@ const Layout = ({ children }: any) => {
         },
       ];
 
+      router.push(`/${id}`);
       localStorage.setItem('@shoppinglist', JSON.stringify(newList));
       setLists(newList);
       setShow(false);
@@ -90,7 +106,9 @@ const Layout = ({ children }: any) => {
 
   useEffect(() => {
     const items = localStorage.getItem('@shoppinglist');
-    items && setLists(JSON.parse(items));
+    if (items) {
+      setLists(JSON.parse(items));
+    }
   }, []);
 
   return (
