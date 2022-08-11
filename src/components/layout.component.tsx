@@ -42,8 +42,9 @@ const Layout = ({ children }: any) => {
 
   const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
 
-  function setShowInput(toShow: boolean) {
-    setShow(toShow);
+  function handleList(data: any) {
+    localStorage.setItem(ENV, JSON.stringify(data));
+    setLists(data);
   }
 
   function handleEnterPress(e: any) {
@@ -51,9 +52,6 @@ const Layout = ({ children }: any) => {
 
     if (e.key === 'Enter') {
       const id = uuid();
-
-      const currentStorage = localStorage.getItem(ENV);
-
       const defautList = [
         {
           id,
@@ -62,22 +60,17 @@ const Layout = ({ children }: any) => {
         },
       ];
 
+      const currentStorage = localStorage.getItem(ENV);
+
       if (currentStorage) {
         const parsedStorage = JSON.parse(currentStorage);
 
-        const newList = [...parsedStorage, defautList];
-
-        localStorage.setItem(ENV, JSON.stringify(newList));
-        setLists(newList);
-        setShow(false);
-
-        router.push(`/${id}`);
-        return;
+        handleList([...parsedStorage, defautList]);
+      } else {
+        handleList(defautList);
       }
 
       router.push(`/${id}`);
-      localStorage.setItem(ENV, JSON.stringify(defautList));
-      setLists(defautList);
       setShow(false);
     }
   }
@@ -90,8 +83,7 @@ const Layout = ({ children }: any) => {
   function handleDelete() {
     const newLists = lists.filter((item) => item.id !== toRemoveId);
 
-    setLists(newLists);
-    localStorage.setItem(ENV, JSON.stringify(newLists));
+    handleList(newLists);
 
     onClose();
     if (router.query.id === toRemoveId) {
@@ -125,7 +117,7 @@ const Layout = ({ children }: any) => {
             <VStack gap={4} alignItems="flex-start">
               <HStack w={'100%'} justifyContent="space-between">
                 <Text fontSize={'3xl'}>Listas</Text>
-                <Button p={0} onClick={() => setShowInput(true)}>
+                <Button p={0} onClick={() => setShow(true)}>
                   <Icon fontSize={'xl'} as={PlusIcon} />
                 </Button>
               </HStack>
