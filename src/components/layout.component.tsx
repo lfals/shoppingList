@@ -10,6 +10,7 @@ import {
   Flex,
   Grid,
   GridItem,
+  Hide,
   HStack,
   Icon,
   Input,
@@ -65,7 +66,7 @@ const Layout = ({ children }: any) => {
       if (currentStorage) {
         const parsedStorage = JSON.parse(currentStorage);
 
-        handleList([...parsedStorage, defautList]);
+        handleList([...parsedStorage, ...defautList]);
       } else {
         handleList(defautList);
       }
@@ -103,9 +104,9 @@ const Layout = ({ children }: any) => {
       <Grid
         h="100vh"
         templateRows="80px 1fr"
-        templateColumns={{ lg: '300px 1fr' }}
+        templateColumns={['1fr', '300px 1fr', '300px 1fr']}
       >
-        <Show above="lg">
+        <Hide breakpoint="(max-width: 760px)">
           <GridItem
             gridColumnStart={1}
             gridColumnEnd={2}
@@ -153,8 +154,7 @@ const Layout = ({ children }: any) => {
               )}
             </VStack>
           </GridItem>
-        </Show>
-
+        </Hide>
         <GridItem
           gridColumnStart={1}
           gridColumnEnd={3}
@@ -174,7 +174,7 @@ const Layout = ({ children }: any) => {
           p={[4, 8]}
         >
           <Grid
-            templateRows={['min-content 1fr', '150px  1fr']}
+            templateRows={['150px  1fr']}
             templateColumns="1fr"
             height={'100%'}
             gap="12px"

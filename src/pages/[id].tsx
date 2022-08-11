@@ -221,13 +221,15 @@ const List: NextPage = ({ children }: any) => {
   return (
     <>
       <Layout>
-        <Box w={'800px'}>
+        <Box maxW={'800px'} w="100%">
           <Text fontSize={'2xl'} fontWeight="bold">
             {priceSum}
           </Text>
           <Text fontSize={'7xl'} fontWeight="bold">
             {list?.name}
           </Text>
+        </Box>
+        <Box maxW={'800px'} w="100%">
           <Flex w={'100%'} justifyContent="flex-end">
             <Button
               onClick={() => {
@@ -249,6 +251,7 @@ const List: NextPage = ({ children }: any) => {
                     mb="4"
                     bgColor={'#20212C'}
                     borderRadius={'0 0 12px 12px'}
+                    w="100%"
                   >
                     <AccordionButton
                       backgroundColor={'#272833'}
@@ -265,7 +268,7 @@ const List: NextPage = ({ children }: any) => {
                     </AccordionButton>
 
                     <AccordionPanel pb={4} borderRadius={'0 0 12px 12px'}>
-                      <Flex gap={4} alignItems="center">
+                      <Flex gap={4} alignItems="center" wrap={'wrap'}>
                         <Image
                           boxSize="85px"
                           objectFit="contain"
