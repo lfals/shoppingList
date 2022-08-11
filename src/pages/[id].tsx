@@ -40,8 +40,8 @@ import {
   Pencil2Icon,
   TrashIcon,
 } from '@radix-ui/react-icons';
-import { useRecoilState } from 'recoil';
-import { listRecoil } from '../hooks/list.hook';
+import { useSetRecoilState } from 'recoil';
+import { listRecoilContext } from '../hooks/list.hook';
 
 interface IList {
   id?: string;
@@ -60,7 +60,8 @@ interface IProduct {
 
 const List: NextPage = ({ children }: any) => {
   const router = useRouter();
-  const [list, setList] = useRecoilState(listRecoil);
+  const [list, setList] = useState({} as IList);
+  const setListRecoil = useSetRecoilState(listRecoilContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [price, setPrice] = useState('');
   const [priceSum, setPriceSum] = useState('');
@@ -146,6 +147,7 @@ const List: NextPage = ({ children }: any) => {
     setLocalItems(mapped);
     setItems(storageList[0].items);
     localStorage.setItem(ENV, JSON.stringify(mapped));
+    setListRecoil(mapped)
     setPrice('');
     onClose();
   }
@@ -174,6 +176,7 @@ const List: NextPage = ({ children }: any) => {
 
     setPriceSum(treatCurrency(totalPrice?.toString()));
     localStorage.setItem(ENV, JSON.stringify(newArray));
+    setListRecoil(newArray)
     onClose();
   }
 
@@ -189,6 +192,7 @@ const List: NextPage = ({ children }: any) => {
 
     localStorage.setItem(ENV, JSON.stringify(newArray));
     setItems(newItems);
+    setListRecoil(newArray)
   }
 
   function handleEdit(productId: string) {

@@ -15,7 +15,7 @@ interface IProduct {
   price: string;
 }
 
-export const listRecoil = atom({
+export const listRecoilContext = atom({
   key: "list",
-  default: {} as IList,
+  default: [] as IList[],
 });

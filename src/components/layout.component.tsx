@@ -37,7 +37,9 @@ import {
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { uuid } from 'uuidv4';
+import { listRecoilContext } from '../hooks/list.hook';
 
 interface IList {
   id: string;
@@ -52,7 +54,7 @@ const Layout = ({ children }: any) => {
   const [lists, setLists] = useState([] as IList[]);
   const [toRemoveId, setToRemoveId] = useState('');
   const [amount, setAmount] = useState('');
-
+  const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isDrawerOpen,
@@ -127,11 +129,13 @@ const Layout = ({ children }: any) => {
     const items = localStorage.getItem(ENV);
     if (items) {
       setLists(JSON.parse(items));
+      setListRecoil(JSON.parse(items));
     }
-    const initialValue = 0;
-    if (!items) return;
+  }, []);
 
-    const priceArray = JSON.parse(items).map((list: any) => {
+  useEffect(() => {
+    const initialValue = 0;
+    const priceArray = listRecoil.map((list: any) => {
       return list.items.map((item: any) => {
         return item.price
       })
@@ -145,7 +149,7 @@ const Layout = ({ children }: any) => {
         initialValue
       )
     )
-  }, []);
+  }, [listRecoil])
 
   const MenuList = () => {
     return (
