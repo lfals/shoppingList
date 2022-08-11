@@ -66,6 +66,8 @@ const List: NextPage = ({ children }: any) => {
   const [itemToEdit, setItemToEdit] = useState({} as IProduct);
   const id = router.query.id;
 
+  const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
+
   const defaultValue = {
     id: '',
     name: '',
@@ -133,9 +135,9 @@ const List: NextPage = ({ children }: any) => {
 
     setLocalItems(mapped);
     console.log(mapped);
-    
+
     setItems(storageList[0].items);
-    localStorage.setItem('@shoppinglist', JSON.stringify(mapped));
+    localStorage.setItem(ENV, JSON.stringify(mapped));
     setPriceSum(treatCurrency(totalPrice?.toString()));
     setPrice('');
     onClose();
@@ -172,7 +174,7 @@ const List: NextPage = ({ children }: any) => {
     );
     setPriceSum(treatCurrency(totalPrice?.toString()));
 
-    localStorage.setItem('@shoppinglist', JSON.stringify(newArray));
+    localStorage.setItem(ENV, JSON.stringify(newArray));
     onClose();
   }
 
@@ -186,7 +188,7 @@ const List: NextPage = ({ children }: any) => {
       return item;
     });
 
-    localStorage.setItem('@shoppinglist', JSON.stringify(newArray));
+    localStorage.setItem(ENV, JSON.stringify(newArray));
     setItems(newItems);
   }
 
@@ -202,7 +204,7 @@ const List: NextPage = ({ children }: any) => {
   }
 
   useEffect(() => {
-    const localItems = localStorage.getItem('@shoppinglist');
+    const localItems = localStorage.getItem(ENV);
 
     if (!localItems) {
       router.replace('/');

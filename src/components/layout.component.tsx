@@ -40,6 +40,8 @@ const Layout = ({ children }: any) => {
 
   const router = useRouter();
 
+  const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
+
   function setShowInput(toShow: boolean) {
     setShow(toShow);
   }
@@ -50,29 +52,9 @@ const Layout = ({ children }: any) => {
     if (e.key === 'Enter') {
       const id = uuid();
 
-      const currentStorage = localStorage.getItem('@shoppinglist');
+      const currentStorage = localStorage.getItem(ENV);
 
-      if (currentStorage) {
-        const parsedStorage = JSON.parse(currentStorage);
-
-        const newList = [
-          ...parsedStorage,
-          {
-            id,
-            name,
-            items: [],
-          },
-        ];
-
-        localStorage.setItem('@shoppinglist', JSON.stringify(newList));
-        setLists(newList);
-        setShow(false);
-
-        router.push(`/${id}`);
-        return;
-      }
-
-      const newList = [
+      const defautList = [
         {
           id,
           name,
@@ -80,9 +62,22 @@ const Layout = ({ children }: any) => {
         },
       ];
 
+      if (currentStorage) {
+        const parsedStorage = JSON.parse(currentStorage);
+
+        const newList = [...parsedStorage, defautList];
+
+        localStorage.setItem(ENV, JSON.stringify(newList));
+        setLists(newList);
+        setShow(false);
+
+        router.push(`/${id}`);
+        return;
+      }
+
       router.push(`/${id}`);
-      localStorage.setItem('@shoppinglist', JSON.stringify(newList));
-      setLists(newList);
+      localStorage.setItem(ENV, JSON.stringify(defautList));
+      setLists(defautList);
       setShow(false);
     }
   }
@@ -96,7 +91,7 @@ const Layout = ({ children }: any) => {
     const newLists = lists.filter((item) => item.id !== toRemoveId);
 
     setLists(newLists);
-    localStorage.setItem('@shoppinglist', JSON.stringify(newLists));
+    localStorage.setItem(ENV, JSON.stringify(newLists));
 
     onClose();
     if (router.query.id === toRemoveId) {
@@ -105,7 +100,7 @@ const Layout = ({ children }: any) => {
   }
 
   useEffect(() => {
-    const items = localStorage.getItem('@shoppinglist');
+    const items = localStorage.getItem(ENV);
     if (items) {
       setLists(JSON.parse(items));
     }
