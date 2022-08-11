@@ -87,6 +87,21 @@ const List: NextPage = ({ children }: any) => {
     return `R$${result}`;
   }
 
+  function handlePriceSum(data: Array<any>) {
+    const initialValue = 0;
+
+    const totalPrice = data.reduce(
+      (previousValue: any, currentValue: any) =>
+        previousValue +
+        parseInt(
+          currentValue.price.replace('.', '').replace(',', '').replace('R$', '')
+        ),
+      initialValue
+    );
+
+    return totalPrice;
+  }
+
   function handleCurrency(value: string) {
     setPrice(treatCurrency(value));
   }
@@ -122,23 +137,12 @@ const List: NextPage = ({ children }: any) => {
 
     const storageList = mapped.filter((item: IList) => item.id === id);
 
-    const initialValue = 0;
+    const totalPrice = handlePriceSum(storageList[0]?.items);
 
-    const totalPrice = storageList[0]?.items.reduce(
-      (previousValue: any, currentValue: any) =>
-        previousValue +
-        parseInt(
-          currentValue.price.replace('.', '').replace(',', '').replace('R$', '')
-        ),
-      initialValue
-    );
-
+    setPriceSum(treatCurrency(totalPrice?.toString()));
     setLocalItems(mapped);
-    console.log(mapped);
-
     setItems(storageList[0].items);
     localStorage.setItem(ENV, JSON.stringify(mapped));
-    setPriceSum(treatCurrency(totalPrice?.toString()));
     setPrice('');
     onClose();
   }
@@ -148,32 +152,24 @@ const List: NextPage = ({ children }: any) => {
       (item: IProduct) => item.id !== itemToEdit?.id
     );
 
-    const newItems = [
-      ...filtered,
-      { ...values, price: price, id: itemToEdit.id },
-    ];
-
-    setItems(newItems);
+    setItems([...filtered, { ...values, price: price, id: itemToEdit.id }]);
 
     const newArray = localItemsArray.map((item: IList) => {
       if (item.id === id) {
-        item.items = newItems;
+        item.items = [
+          ...filtered,
+          { ...values, price: price, id: itemToEdit.id },
+        ];
       }
       return item;
     });
 
-    const initialValue = 0;
+    const totalPrice = handlePriceSum([
+      ...filtered,
+      { ...values, price: price, id: itemToEdit.id },
+    ]);
 
-    const totalPrice = newItems.reduce(
-      (previousValue: any, currentValue: any) =>
-        previousValue +
-        parseInt(
-          currentValue.price.replace('.', '').replace(',', '').replace('R$', '')
-        ),
-      initialValue
-    );
     setPriceSum(treatCurrency(totalPrice?.toString()));
-
     localStorage.setItem(ENV, JSON.stringify(newArray));
     onClose();
   }
@@ -193,10 +189,7 @@ const List: NextPage = ({ children }: any) => {
   }
 
   function handleEdit(productId: string) {
-    console.log(productId);
-
     const filtered = items.filter((item: IProduct) => item.id === productId);
-    console.log(filtered);
 
     setItemToEdit(filtered[0]);
     setPrice(filtered[0].price);
@@ -215,16 +208,8 @@ const List: NextPage = ({ children }: any) => {
 
     setList(storageList[0]);
 
-    const initialValue = 0;
+    const totalPrice = handlePriceSum(storageList[0]?.items);
 
-    const totalPrice = storageList[0]?.items.reduce(
-      (previousValue: any, currentValue: any) =>
-        previousValue +
-        parseInt(
-          currentValue.price.replace('.', '').replace(',', '').replace('R$', '')
-        ),
-      initialValue
-    );
     setPriceSum(treatCurrency(totalPrice?.toString()));
 
     setLocalItems(items);
