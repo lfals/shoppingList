@@ -120,9 +120,6 @@ const List: NextPage = ({ children }: any) => {
   }
 
   function handleSaveItem(values: any) {
-    console.log(values);
-
-    console.log(itemToEdit, values);
     if (itemToEdit.id !== '') {
       editItem(values);
     } else {
@@ -195,8 +192,6 @@ const List: NextPage = ({ children }: any) => {
       return item;
     });
 
-    console.log(newArray);
-
     const totalPrice = handlePriceSum([
       ...filtered,
       { ...values, price: price, id: itemToEdit.id },
@@ -220,8 +215,6 @@ const List: NextPage = ({ children }: any) => {
       }
       return item;
     });
-
-    console.log(newArray);
 
     localStorage.setItem(ENV, JSON.stringify(newArray));
     setItems(newItems);
@@ -258,8 +251,6 @@ const List: NextPage = ({ children }: any) => {
   }
 
   function togglePriceView(e: any, itemId: string) {
-    console.log(listRecoil[0].items);
-
     const newItems = items.map((item) => {
       if (item.id === itemId) {
         item = {
