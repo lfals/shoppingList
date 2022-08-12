@@ -68,7 +68,7 @@ const List: NextPage = ({ children }: any) => {
   const router = useRouter();
   const [list, setList] = useState({} as IList);
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
-  const [listTitle, setListTitle] = useState(list.name)
+  const [listTitle, setListTitle] = useState(list.name);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [price, setPrice] = useState('');
   const [priceSum, setPriceSum] = useState('');
@@ -103,11 +103,11 @@ const List: NextPage = ({ children }: any) => {
     const totalPrice = data.reduce((previousValue: any, currentValue: any) => {
       const currentPrice = currentValue.show
         ? parseFloat(
-          currentValue.price
-            .replaceAll('.', '')
-            .replaceAll(',', '')
-            .replace('R$', '')
-        )
+            currentValue.price
+              .replaceAll('.', '')
+              .replaceAll(',', '')
+              .replace('R$', '')
+          )
         : 0;
       return previousValue + currentPrice;
     }, initialValue);
@@ -120,9 +120,6 @@ const List: NextPage = ({ children }: any) => {
   }
 
   function handleSaveItem(values: any) {
-    console.log(values);
-
-    console.log(itemToEdit, values);
     if (itemToEdit.id !== '') {
       editItem(values);
     } else {
@@ -179,10 +176,18 @@ const List: NextPage = ({ children }: any) => {
 
     const newArray = localItemsArray.map((item: IList) => {
       if (item.id === id) {
-        item.items = [
-          ...filtered,
-          { ...values, price: price, id: itemToEdit.id },
-        ];
+        item = {
+          ...item,
+          items: [
+            ...filtered,
+            {
+              ...values,
+              image: itemToEdit.image,
+              price: price,
+              id: itemToEdit.id,
+            },
+          ],
+        };
       }
       return item;
     });
@@ -211,8 +216,6 @@ const List: NextPage = ({ children }: any) => {
       return item;
     });
 
-    console.log(newArray);
-
     localStorage.setItem(ENV, JSON.stringify(newArray));
     setItems(newItems);
     setLocalItems(newArray);
@@ -228,15 +231,15 @@ const List: NextPage = ({ children }: any) => {
   }
 
   function updateListTitle(newTitle: string) {
-    if(newTitle.length === 0){
+    if (newTitle.length === 0) {
       setListTitle(list.name);
-      return
-    };
+      return;
+    }
     const newList = localItemsArray.map((list: IList) => {
       if (list.id === id) {
         list = {
           ...list,
-          name: newTitle
+          name: newTitle,
         };
       }
       return list;
@@ -248,8 +251,6 @@ const List: NextPage = ({ children }: any) => {
   }
 
   function togglePriceView(e: any, itemId: string) {
-    console.log(listRecoil[0].items);
-
     const newItems = items.map((item) => {
       if (item.id === itemId) {
         item = {
@@ -294,10 +295,10 @@ const List: NextPage = ({ children }: any) => {
     const totalPrice = handlePriceSum(storageList[0].items);
 
     setPriceSum(treatCurrency(totalPrice?.toString()));
-    setListTitle(storageList[0].name)
+    setListTitle(storageList[0].name);
     setLocalItems(items);
     setItems(storageList[0]?.items);
-  }, [router.query.id]);
+  }, [router.query.id, listRecoil]);
 
   return (
     <>
@@ -326,7 +327,7 @@ const List: NextPage = ({ children }: any) => {
               borderBottom: '1px solid #fff',
             }}
           >
-            <EditablePreview w='100%'/>
+            <EditablePreview w="100%" />
             <EditableInput
               _focus={{
                 boxShadow: 'none',
