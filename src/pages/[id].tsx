@@ -68,6 +68,7 @@ const List: NextPage = ({ children }: any) => {
   const router = useRouter();
   const [list, setList] = useState({} as IList);
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
+  const [listTitle, setListTitle] = useState(list.name)
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [price, setPrice] = useState('');
   const [priceSum, setPriceSum] = useState('');
@@ -102,11 +103,11 @@ const List: NextPage = ({ children }: any) => {
     const totalPrice = data.reduce((previousValue: any, currentValue: any) => {
       const currentPrice = currentValue.show
         ? parseFloat(
-            currentValue.price
-              .replaceAll('.', '')
-              .replaceAll(',', '')
-              .replace('R$', '')
-          )
+          currentValue.price
+            .replaceAll('.', '')
+            .replaceAll(',', '')
+            .replace('R$', '')
+        )
         : 0;
       return previousValue + currentPrice;
     }, initialValue);
@@ -226,6 +227,26 @@ const List: NextPage = ({ children }: any) => {
     onOpen();
   }
 
+  function updateListTitle(newTitle: string) {
+    if(newTitle.length === 0){
+      setListTitle(list.name);
+      return
+    };
+    const newList = localItemsArray.map((list: IList) => {
+      if (list.id === id) {
+        list = {
+          ...list,
+          name: newTitle
+        };
+      }
+      return list;
+    });
+
+    setLocalItems(newList);
+    localStorage.setItem(ENV, JSON.stringify(newList));
+    setListRecoil(newList);
+  }
+
   function togglePriceView(e: any, itemId: string) {
     console.log(listRecoil[0].items);
 
@@ -248,8 +269,6 @@ const List: NextPage = ({ children }: any) => {
       }
       return list;
     });
-
-    console.log(newList[0].items);
 
     const totalPrice = handlePriceSum(newItems);
     setItems(newItems);
@@ -275,7 +294,7 @@ const List: NextPage = ({ children }: any) => {
     const totalPrice = handlePriceSum(storageList[0].items);
 
     setPriceSum(treatCurrency(totalPrice?.toString()));
-
+    setListTitle(storageList[0].name)
     setLocalItems(items);
     setItems(storageList[0]?.items);
   }, [router.query.id]);
@@ -291,10 +310,31 @@ const List: NextPage = ({ children }: any) => {
           <Text fontSize={'2xl'} fontWeight="bold">
             {priceSum}
           </Text>
-
-          <Text fontSize={'7xl'} fontWeight="bold">
-            {list?.name}
-          </Text>
+          <Editable
+            variant={'flushed'}
+            value={listTitle}
+            color={'#fff'}
+            fontSize={'7xl'}
+            fontWeight="bold"
+            onChange={(nextValue: string) => setListTitle(nextValue)}
+            onSubmit={(nextValue: string) => updateListTitle(nextValue)}
+            style={{
+              transition: '0.5s',
+              borderRadius: '0px',
+            }}
+            _hover={{
+              borderBottom: '1px solid #fff',
+            }}
+          >
+            <EditablePreview w='100%'/>
+            <EditableInput
+              _focus={{
+                boxShadow: 'none',
+                borderBottom: '1px solid #fff',
+                borderRadius: '0px',
+              }}
+            />
+          </Editable>
         </Box>
         <Box maxW={'900px'} w="100%">
           <Flex w={'100%'} justifyContent="flex-start">

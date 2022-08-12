@@ -160,6 +160,8 @@ const Layout = ({ children }: any) => {
   }, []);
 
   useEffect(() => {
+    const newList: any = listRecoil;
+    setLists(newList);
     const initialValue = 0;
     const priceArray = listRecoil
       .map((list: any) => {
@@ -172,11 +174,11 @@ const Layout = ({ children }: any) => {
       priceArray.reduce((previousValue: any, currentValue: any) => {
         const currentPrice = currentValue.show
           ? parseFloat(
-              currentValue.price
-                .replaceAll('.', '')
-                .replaceAll(',', '')
-                .replace('R$', '')
-            )
+            currentValue.price
+              .replaceAll('.', '')
+              .replaceAll(',', '')
+              .replace('R$', '')
+          )
           : 0;
         return previousValue + currentPrice;
       }, initialValue)
@@ -298,7 +300,7 @@ const Layout = ({ children }: any) => {
           p={[4, 8]}
         >
           <Grid
-            templateRows={['140px  1fr']}
+            templateRows={['150px  1fr']}
             templateColumns="1fr"
             gap="12px"
             justifyItems={'center'}
