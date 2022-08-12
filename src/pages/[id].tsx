@@ -83,6 +83,7 @@ const List: NextPage = ({ children }: any) => {
     name: '',
     store: '',
     link: '',
+    show: true,
     price: '',
   };
 

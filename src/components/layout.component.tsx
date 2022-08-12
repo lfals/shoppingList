@@ -43,7 +43,7 @@ import { uuid } from 'uuidv4';
 import { listRecoilContext } from '../hooks/list.hook';
 
 interface IList {
-  id?: string;
+  id: string;
   name: string;
   items: Array<IProduct>;
 }
@@ -163,7 +163,7 @@ const Layout = ({ children }: any) => {
     const initialValue = 0;
     const priceArray = listRecoil
       .map((list: any) => {
-        return list.items.map((item) => {
+        return list.items.map((item: any) => {
           return { price: item.price, show: item.show };
         });
       })
@@ -264,7 +264,14 @@ const Layout = ({ children }: any) => {
           <HStack h={'100%'} px={3} justifyContent="space-between">
             <NextLink href={'/'}>
               <Link>
-                <Image src='/assets/images/logo.png' style={{ filter: 'brightness(0) invert(1)', pointerEvents: 'none' }} alt='logo' />
+                <Image
+                  src="/assets/images/logo.png"
+                  style={{
+                    filter: 'brightness(0) invert(1)',
+                    pointerEvents: 'none',
+                  }}
+                  alt="logo"
+                />
               </Link>
             </NextLink>
 
