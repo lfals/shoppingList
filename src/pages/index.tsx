@@ -9,6 +9,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
+import Head from 'next/head';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
@@ -85,6 +86,10 @@ const List: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>To Buy List</title>
+        <meta name="description" content="A Sua lista de compras" />
+      </Head>
       <Layout>
         <Box maxW={'900px'} w="100%">
           <HStack justifyContent={'space-between'} flexWrap={'wrap'}>
