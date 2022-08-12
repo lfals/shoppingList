@@ -6,7 +6,10 @@ export default function Document() {
       <Head>
         <link rel="shortcut icon" href="/favicon.png" />
         <meta property="og:title" content="To buy List" />
-        <meta property="og:image" content="/thumbnail.png" />
+        <meta
+          property="og:image"
+          content="https://dev.tobuylist.fluma.dev/thumbnail.png"
+        />
         <meta
           property="og:description"
           content="A lista de compras que faltava"
