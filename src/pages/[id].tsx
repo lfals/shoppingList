@@ -23,11 +23,14 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Show,
   Text,
   useDisclosure,
   VStack,
   Tooltip,
+  Switch,
+  Editable,
+  EditablePreview,
+  EditableInput,
 } from '@chakra-ui/react';
 import { Field, Formik, useFormik } from 'formik';
 import type { NextPage } from 'next';
@@ -40,7 +43,7 @@ import {
   Pencil2Icon,
   TrashIcon,
 } from '@radix-ui/react-icons';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { listRecoilContext } from '../hooks/list.hook';
 import Head from 'next/head';
 import searchImage from '../functions/search.function';
@@ -58,12 +61,13 @@ interface IProduct {
   link: string;
   image?: string;
   price: string;
+  show: boolean;
 }
 
 const List: NextPage = ({ children }: any) => {
   const router = useRouter();
   const [list, setList] = useState({} as IList);
-  const setListRecoil = useSetRecoilState(listRecoilContext);
+  const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [price, setPrice] = useState('');
   const [priceSum, setPriceSum] = useState('');
@@ -94,17 +98,17 @@ const List: NextPage = ({ children }: any) => {
   function handlePriceSum(data: Array<any>) {
     const initialValue = 0;
 
-    const totalPrice = data.reduce(
-      (previousValue: any, currentValue: any) =>
-        previousValue +
-        parseFloat(
-          currentValue.price
-            .replaceAll('.', '')
-            .replaceAll(',', '')
-            .replace('R$', '')
-        ),
-      initialValue
-    );
+    const totalPrice = data.reduce((previousValue: any, currentValue: any) => {
+      const currentPrice = currentValue.show
+        ? parseFloat(
+            currentValue.price
+              .replaceAll('.', '')
+              .replaceAll(',', '')
+              .replace('R$', '')
+          )
+        : 0;
+      return previousValue + currentPrice;
+    }, initialValue);
 
     return totalPrice;
   }
@@ -135,15 +139,19 @@ const List: NextPage = ({ children }: any) => {
 
     const mapped = localItemsArray.map((item: IList) => {
       if (item.id === id) {
-        item.items = [
-          ...item.items,
-          {
-            id: uuid(),
-            ...values,
-            price: price,
-            image: imageLink,
-          },
-        ];
+        item = {
+          ...item,
+          items: [
+            ...item.items,
+            {
+              id: uuid(),
+              ...values,
+              price: price,
+              image: imageLink,
+              show: true,
+            },
+          ],
+        };
       }
       return item;
     });
@@ -212,6 +220,38 @@ const List: NextPage = ({ children }: any) => {
     onOpen();
   }
 
+  function togglePriceView(e: any, itemId: string) {
+    console.log(listRecoil[0].items);
+
+    const newItems = items.map((item) => {
+      if (item.id === itemId) {
+        item = {
+          ...item,
+          show: e.target.checked,
+        };
+      }
+      return item;
+    });
+
+    const newList = listRecoil.map((list: IList) => {
+      if (list.id === id) {
+        list = {
+          ...list,
+          items: newItems,
+        };
+      }
+      return list;
+    });
+
+    console.log(newList[0].items);
+
+    const totalPrice = handlePriceSum(newItems);
+    setItems(newItems);
+    setPriceSum(treatCurrency(totalPrice?.toString()));
+    setListRecoil(newList);
+    localStorage.setItem(ENV, JSON.stringify(newList));
+  }
+
   useEffect(() => {
     const localItems = localStorage.getItem(ENV);
 
@@ -245,6 +285,7 @@ const List: NextPage = ({ children }: any) => {
           <Text fontSize={'2xl'} fontWeight="bold">
             {priceSum}
           </Text>
+
           <Text fontSize={'7xl'} fontWeight="bold">
             {list?.name}
           </Text>
@@ -299,7 +340,16 @@ const List: NextPage = ({ children }: any) => {
                         </Tooltip>
 
                         <Flex gap={4}>
-                          <Text>{product.price}</Text>
+                          <Text whiteSpace="nowrap">{product.price}</Text>
+                          <FormControl display="flex" alignItems="center">
+                            <Switch
+                              isChecked={product.show}
+                              defaultChecked={product.show}
+                              onChange={(e) => {
+                                togglePriceView(e, product.id);
+                              }}
+                            />
+                          </FormControl>
                         </Flex>
                       </Flex>
                       <AccordionIcon color="white" />

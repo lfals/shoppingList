@@ -43,11 +43,19 @@ import { uuid } from 'uuidv4';
 import { listRecoilContext } from '../hooks/list.hook';
 
 interface IList {
+  id?: string;
+  name: string;
+  items: Array<IProduct>;
+}
+
+interface IProduct {
   id: string;
   name: string;
-  items: [{
-    price: string
-  }]
+  store: string;
+  link: string;
+  image?: string;
+  price: string;
+  show?: boolean;
 }
 
 const Layout = ({ children }: any) => {
@@ -128,30 +136,52 @@ const Layout = ({ children }: any) => {
   }
 
   useEffect(() => {
-    const items = localStorage.getItem(ENV);
-    if (items) {
-      setLists(JSON.parse(items));
-      setListRecoil(JSON.parse(items));
+    const lists = localStorage.getItem(ENV);
+
+    if (lists) {
+      const parsedLists: Array<IList> = JSON.parse(lists);
+      const checkIfItemHasShowField = parsedLists.map((list) => {
+        list.items = list.items.map((item) => {
+          if (item.show === undefined) {
+            item = {
+              ...item,
+              show: true,
+            };
+          }
+          return item;
+        });
+        return list;
+      });
+
+      setLists(checkIfItemHasShowField);
+      setListRecoil(checkIfItemHasShowField);
+      localStorage.setItem(ENV, JSON.stringify(checkIfItemHasShowField));
     }
   }, []);
 
   useEffect(() => {
     const initialValue = 0;
-    const priceArray = listRecoil.map((list: any) => {
-      return list.items.map((item: any) => {
-        return item.price
+    const priceArray = listRecoil
+      .map((list: any) => {
+        return list.items.map((item) => {
+          return { price: item.price, show: item.show };
+        });
       })
-    }).flat(Infinity)
+      .flat(Infinity);
     setAmount(
-      priceArray.reduce(
-        (previousValue: any, currentValue: any) =>
-          previousValue + parseInt(
-            currentValue.replaceAll('.', '').replaceAll(',', '').replace('R$', '')
-          ),
-        initialValue
-      )
-    )
-  }, [listRecoil])
+      priceArray.reduce((previousValue: any, currentValue: any) => {
+        const currentPrice = currentValue.show
+          ? parseFloat(
+              currentValue.price
+                .replaceAll('.', '')
+                .replaceAll(',', '')
+                .replace('R$', '')
+            )
+          : 0;
+        return previousValue + currentPrice;
+      }, initialValue)
+    );
+  }, [listRecoil]);
 
   const MenuList = () => {
     return (
@@ -201,8 +231,6 @@ const Layout = ({ children }: any) => {
           </HStack>
         )}
       </VStack>
-
-
     );
   };
 
@@ -234,16 +262,26 @@ const Layout = ({ children }: any) => {
           bgColor="#20212C"
         >
           <HStack h={'100%'} px={3} justifyContent="space-between">
-            <Image src='/assets/images/logo.png' style={{ filter: 'brightness(0) invert(1)', pointerEvents: 'none'}} alt='logo' />
+            <Image
+              src="/assets/images/logo.png"
+              style={{
+                filter: 'brightness(0) invert(1)',
+                pointerEvents: 'none',
+              }}
+              alt="logo"
+            />
             <Show breakpoint="(max-width: 760px)">
               <Flex alignItems={'center'} h="100%" p={'0 12px'}>
-                <Button colorScheme="teal" onClick={onDrawerOpen} variant="ghost">
+                <Button
+                  colorScheme="teal"
+                  onClick={onDrawerOpen}
+                  variant="ghost"
+                >
                   <Icon as={HamburgerMenuIcon} fontSize="24" />
                 </Button>
               </Flex>
             </Show>
           </HStack>
-
         </GridItem>
 
         <GridItem

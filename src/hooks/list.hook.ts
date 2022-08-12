@@ -11,8 +11,9 @@ interface IProduct {
   name: string;
   store: string;
   link: string;
-  image: string;
+  image?: string;
   price: string;
+  show?: boolean;
 }
 
 export const listRecoilContext = atom({
