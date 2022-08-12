@@ -133,7 +133,6 @@ const List: NextPage = ({ children }: any) => {
       console.error('storage vazio, fez merda aí');
       return;
     }
-    console.log(price);
 
     const imageLink = await searchImage(values.name);
 
@@ -191,9 +190,9 @@ const List: NextPage = ({ children }: any) => {
       { ...values, price: price, id: itemToEdit.id },
     ]);
 
+    setListRecoil(newArray);
     setPriceSum(treatCurrency(totalPrice?.toString()));
     localStorage.setItem(ENV, JSON.stringify(newArray));
-    setListRecoil(newArray);
     onClose();
   }
 
@@ -202,13 +201,19 @@ const List: NextPage = ({ children }: any) => {
 
     const newArray = localItemsArray.map((item: IList) => {
       if (item.id === id) {
-        item.items = newItems;
+        item = {
+          ...item,
+          items: newItems,
+        };
       }
       return item;
     });
 
+    console.log(newArray);
+
     localStorage.setItem(ENV, JSON.stringify(newArray));
     setItems(newItems);
+    setLocalItems(newArray);
     setListRecoil(newArray);
   }
 
@@ -233,7 +238,7 @@ const List: NextPage = ({ children }: any) => {
       return item;
     });
 
-    const newList = listRecoil.map((list: IList) => {
+    const newList = listRecoil.map((list: any) => {
       if (list.id === id) {
         list = {
           ...list,

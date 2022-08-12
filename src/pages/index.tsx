@@ -1,4 +1,13 @@
-import { Box, Grid, GridItem, HStack, Stack, Text, Tooltip, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Grid,
+  GridItem,
+  HStack,
+  Stack,
+  Text,
+  Tooltip,
+  VStack,
+} from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -11,34 +20,35 @@ interface IList {
   name: string;
 }
 
-
-
 const List: NextPage = () => {
   const [amount, setAmount] = useState('');
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
 
-
   function treatCurrency(value: any, cents: boolean) {
-    if (isNaN(value)) value = value.replaceAll('.', '').replaceAll(',', '').replace('R$', '');
+    if (isNaN(value))
+      value = value.replaceAll('.', '').replaceAll(',', '').replace('R$', '');
 
     const options = { minimumFractionDigits: 2 };
     const result = new Intl.NumberFormat('pt-BR', options).format(
       parseFloat(value) / 100
     );
-    return cents == true ? `R$ ${result}` : `R$ ${result.split(',')[0]}`
+    return cents == true ? `R$ ${result}` : `R$ ${result.split(',')[0]}`;
   }
 
   function handlePriceSum(data: Array<any>) {
     const initialValue = 0;
-    const totalPrice = data.reduce(
-      (previousValue: any, currentValue: any) =>
-        previousValue +
-        parseFloat(
-          currentValue.price.replaceAll('.', '').replaceAll(',', '').replace('R$', '')
-        ),
-      initialValue
-    );
+    const totalPrice = data.reduce((previousValue: any, currentValue: any) => {
+      const currentPrice = currentValue.show
+        ? parseFloat(
+            currentValue.price
+              .replaceAll('.', '')
+              .replaceAll(',', '')
+              .replace('R$', '')
+          )
+        : 0;
+      return previousValue + currentPrice;
+    }, initialValue);
     return totalPrice;
   }
 
@@ -49,21 +59,29 @@ const List: NextPage = () => {
 
   useEffect(() => {
     const initialValue = 0;
-    const priceArray = listRecoil.map((list: any) => {
-      return list.items.map((item: any) => {
-        return item.price
+    const priceArray = listRecoil
+      .map((list: any) => {
+        return list.items.map((item: any) => {
+          return { price: item.price, show: item.show };
+        });
       })
-    }).flat(Infinity)
+      .flat(Infinity);
     setAmount(
-      priceArray.reduce(
-        (previousValue: any, currentValue: any) =>
-          previousValue + parseInt(
-            currentValue.replaceAll('.', '').replaceAll(',', '').replace('R$', '')
-          ),
-        initialValue
-      )
-    )
-  }, [listRecoil])
+      priceArray.reduce((previousValue: any, currentValue: any) => {
+        console.log(currentValue);
+
+        const currentPrice = currentValue.show
+          ? parseFloat(
+              currentValue.price
+                .replaceAll('.', '')
+                .replaceAll(',', '')
+                .replace('R$', '')
+            )
+          : 0;
+        return previousValue + currentPrice;
+      }, initialValue)
+    );
+  }, [listRecoil]);
 
   return (
     <>
@@ -100,61 +118,76 @@ const List: NextPage = () => {
             flexWrap={'wrap'}
             alignItems={'start'}
           >
-            {
-              listRecoil.map((list: any) => {
-                return (
-                  <Link href={`/${list.id}`} key={list.id}>
-                    <Box
-                      p={5}
-                      bgColor="#20212C"
-                      borderRadius={'12px'}
-                      h={'200px'}
-                      w={['95%', '95%', '95%', '200px']}
-                      style={{ marginInlineStart: '0px', cursor: 'pointer', transition: '0.5s' }}
-                      // _hover={{border: '2px solid #fff'}}
-                      _hover={{ boxShadow: '0px 0px 8px 2px #FFFFFF' }}
-                    >
-                      <VStack justifyContent={'space-between'} h={'100%'}>
-                        <Tooltip hasArrow label={list.name} placement="top">
+            {listRecoil.map((list: any) => {
+              return (
+                <Link href={`/${list.id}`} key={list.id}>
+                  <Box
+                    p={5}
+                    bgColor="#20212C"
+                    borderRadius={'12px'}
+                    h={'200px'}
+                    w={['95%', '95%', '95%', '200px']}
+                    style={{
+                      marginInlineStart: '0px',
+                      cursor: 'pointer',
+                      transition: '0.5s',
+                    }}
+                    // _hover={{border: '2px solid #fff'}}
+                    _hover={{ boxShadow: '0px 0px 8px 2px #FFFFFF' }}
+                  >
+                    <VStack justifyContent={'space-between'} h={'100%'}>
+                      <Tooltip hasArrow label={list.name} placement="top">
+                        <Text
+                          fontSize={'3xl'}
+                          textAlign="center"
+                          fontWeight="bold"
+                          textOverflow={'ellipsis'}
+                          whiteSpace="nowrap"
+                          overflow={'hidden'}
+                          w={'100%'}
+                        >
+                          {list.name}
+                        </Text>
+                      </Tooltip>
+                      <HStack w={'100%'} justifyContent={'space-between'}>
+                        <VStack alignItems={'start'}>
                           <Text
-                            fontSize={'3xl'}
-                            textAlign='center'
-                            fontWeight="bold"
-                            textOverflow={'ellipsis'}
-                            whiteSpace="nowrap"
-                            overflow={'hidden'}
-                            w={'100%'}
+                            fontSize={['sm', 'md', 'lg']}
+                            textAlign="center"
                           >
-                            {list.name}
+                            Itens
                           </Text>
-                        </Tooltip >
-                        <HStack w={'100%'} justifyContent={'space-between'}>
-                          <VStack alignItems={'start'}>
-                            <Text fontSize={['sm', 'md', 'lg']} textAlign='center'>
-                              Itens
-                            </Text>
-                            <Text style={{ marginTop: '0px' }} fontSize={['sm', 'md', 'lg']} textAlign='center' fontWeight="bold">
-                              {list.items.length}
-                            </Text>
-                          </VStack>
-                          <VStack alignItems={'start'}>
-                            <Text fontSize={['sm', 'md', 'lg']} textAlign='center'>
-                              Total
-                            </Text>
-                            <Text style={{ marginTop: '0px' }} fontSize={['md', 'lg', 'xl']} textAlign='center' fontWeight="bold">
-                              {treatCurrency(handlePriceSum(list.items), false)}
-                            </Text>
-                          </VStack>
-                        </HStack>
-
-                      </VStack>
-
-                    </Box>
-                  </Link>
-
-                )
-              })
-            }
+                          <Text
+                            style={{ marginTop: '0px' }}
+                            fontSize={['sm', 'md', 'lg']}
+                            textAlign="center"
+                            fontWeight="bold"
+                          >
+                            {list.items.length}
+                          </Text>
+                        </VStack>
+                        <VStack alignItems={'start'}>
+                          <Text
+                            fontSize={['sm', 'md', 'lg']}
+                            textAlign="center"
+                          >
+                            Total
+                          </Text>
+                          <Text
+                            style={{ marginTop: '0px' }}
+                            fontSize={['md', 'lg', 'xl']}
+                            textAlign="center"
+                            fontWeight="bold"
+                          >
+                            {treatCurrency(handlePriceSum(list.items), false)}
+                          </Text>
+                        </VStack>
+                      </HStack>
+                    </VStack>
+                  </Box>
+                </Link>
+              );
+            })}
           </HStack>
         </Box>
       </Layout>
