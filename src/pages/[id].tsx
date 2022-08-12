@@ -281,7 +281,7 @@ const List: NextPage = ({ children }: any) => {
         <meta name="description" content="" />
       </Head>
       <Layout>
-        <Box maxW={'800px'} w="100%">
+        <Box maxW={'900px'} w="100%">
           <Text fontSize={'2xl'} fontWeight="bold">
             {priceSum}
           </Text>
@@ -290,7 +290,7 @@ const List: NextPage = ({ children }: any) => {
             {list?.name}
           </Text>
         </Box>
-        <Box maxW={'800px'} w="100%">
+        <Box maxW={'900px'} w="100%">
           <Flex w={'100%'} justifyContent="flex-start">
             <Button
               onClick={() => {

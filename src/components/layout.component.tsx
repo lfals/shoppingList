@@ -240,7 +240,7 @@ const Layout = ({ children }: any) => {
         h="100vh"
         overflowY={'hidden'}
         templateRows="80px 1fr"
-        templateColumns={['1fr', '300px 1fr', '300px 1fr']}
+        templateColumns={['1fr', '1fr', '300px 1fr', '300px 1fr']}
       >
         <Hide breakpoint="(max-width: 760px)">
           <GridItem
@@ -262,14 +262,12 @@ const Layout = ({ children }: any) => {
           bgColor="#20212C"
         >
           <HStack h={'100%'} px={3} justifyContent="space-between">
-            <Image
-              src="/assets/images/logo.png"
-              style={{
-                filter: 'brightness(0) invert(1)',
-                pointerEvents: 'none',
-              }}
-              alt="logo"
-            />
+            <NextLink href={'/'}>
+              <Link>
+                <Image src='/assets/images/logo.png' style={{ filter: 'brightness(0) invert(1)', pointerEvents: 'none' }} alt='logo' />
+              </Link>
+            </NextLink>
+
             <Show breakpoint="(max-width: 760px)">
               <Flex alignItems={'center'} h="100%" p={'0 12px'}>
                 <Button
@@ -293,7 +291,7 @@ const Layout = ({ children }: any) => {
           p={[4, 8]}
         >
           <Grid
-            templateRows={['150px  1fr']}
+            templateRows={['140px  1fr']}
             templateColumns="1fr"
             gap="12px"
             justifyItems={'center'}
