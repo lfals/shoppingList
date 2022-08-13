@@ -1,21 +1,12 @@
 import React, { useState } from 'react';
+import {
+  transformNumberToPrice,
+  transformPriceToNumber,
+} from '../functions/currency.treatment.function';
 import { IList } from '../interfaces/list.interface';
 
 function useSumListsTotalAmountHook() {
   const [sumAmount, setSumAmount] = useState<IList[]>([]);
-
-  function transformPriceToNumber(data: string): number {
-    return parseFloat(
-      data.replaceAll('.', '').replaceAll(',', '').replaceAll('R$', '')
-    );
-  }
-
-  function transformNumberToPrice(value: number): string {
-    const options = { minimumFractionDigits: 2 };
-    const result = new Intl.NumberFormat('pt-BR', options).format(value / 100);
-
-    return `R$ ${result}`;
-  }
 
   function sumTotalValues(lists: IList[]): any {
     const newList = lists

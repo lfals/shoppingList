@@ -41,7 +41,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { uuid } from 'uuidv4';
 import { listRecoilContext } from '../hooks/list.hook';
-import useSumListsTotalAmountHook from '../hooks/listsAmount.hook';
+import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
 
 interface IList {
   id: string;

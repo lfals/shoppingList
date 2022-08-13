@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import Layout from '../components/layout.component';
 import { listRecoilContext } from '../hooks/list.hook';
-import useSumListsTotalAmountHook from '../hooks/listsAmount.hook';
+import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
 
 const List: NextPage = () => {
   const [amount, setSumAmount] = useSumListsTotalAmountHook();

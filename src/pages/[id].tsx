@@ -28,7 +28,6 @@ import {
   Editable,
   EditablePreview,
   EditableInput,
-  useNumberInput,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -52,15 +51,16 @@ import { listRecoilContext } from '../hooks/list.hook';
 import Head from 'next/head';
 import searchImage from '../functions/search.function';
 import { IList, IProduct } from '../interfaces/list.interface';
+import useSumItemsTotalAmountHook from '../hooks/items.amount.hook';
 
 const List: NextPage = ({ children }: any) => {
   const router = useRouter();
   const [list, setList] = useState({} as IList);
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
+  const [itemsTotalSum, setItemsToSum] = useSumItemsTotalAmountHook();
   const [listTitle, setListTitle] = useState(list.name);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [price, setPrice] = useState('');
-  const [priceSum, setPriceSum] = useState('');
   const [items, setItems] = useState([] as IProduct[]);
   const [localItemsArray, setLocalItems] = useState([] as any);
   const [itemToEdit, setItemToEdit] = useState({} as IProduct);
@@ -85,24 +85,6 @@ const List: NextPage = ({ children }: any) => {
       parseFloat(value) / 100
     );
     return `R$ ${result}`;
-  }
-
-  function handlePriceSum(data: Array<any>) {
-    const initialValue = 0;
-
-    const totalPrice = data.reduce((previousValue: any, currentValue: any) => {
-      const currentPrice = currentValue.show
-        ? parseFloat(
-            currentValue.price
-              .replaceAll('.', '')
-              .replaceAll(',', '')
-              .replace('R$', '')
-          ) * currentValue.qtd
-        : 0;
-      return previousValue + currentPrice;
-    }, initialValue);
-
-    return totalPrice;
   }
 
   function handleCurrency(value: string) {
@@ -147,9 +129,7 @@ const List: NextPage = ({ children }: any) => {
 
     const storageList = mapped.filter((item: IList) => item.id === id);
 
-    const totalPrice = handlePriceSum(storageList[0]?.items);
-
-    setPriceSum(treatCurrency(totalPrice?.toString()));
+    setItemsToSum(storageList[0]?.items);
     setLocalItems(mapped);
     setItems(storageList[0].items);
     localStorage.setItem(ENV, JSON.stringify(mapped));
@@ -193,7 +173,7 @@ const List: NextPage = ({ children }: any) => {
       return item;
     });
 
-    const totalPrice = handlePriceSum([
+    setItemsToSum([
       ...filtered,
       {
         ...values,
@@ -205,7 +185,6 @@ const List: NextPage = ({ children }: any) => {
     ]);
 
     setListRecoil(newArray);
-    setPriceSum(treatCurrency(totalPrice?.toString()));
     localStorage.setItem(ENV, JSON.stringify(newArray));
     onClose();
   }
@@ -277,9 +256,8 @@ const List: NextPage = ({ children }: any) => {
       return list;
     });
 
-    const totalPrice = handlePriceSum(newItems);
     setItems(newItems);
-    setPriceSum(treatCurrency(totalPrice?.toString()));
+    setItemsToSum(newItems);
     setListRecoil(newList);
     localStorage.setItem(ENV, JSON.stringify(newList));
   }
@@ -305,9 +283,8 @@ const List: NextPage = ({ children }: any) => {
       return list;
     });
 
-    const totalPrice = handlePriceSum(newItems);
+    setItemsToSum(newItems);
     setItems(newItems);
-    setPriceSum(treatCurrency(totalPrice?.toString()));
     setListRecoil(newList);
     localStorage.setItem(ENV, JSON.stringify(newList));
   }
@@ -321,24 +298,22 @@ const List: NextPage = ({ children }: any) => {
   }
 
   useEffect(() => {
-    const localItems = localStorage.getItem(ENV);
+    const localStorageLists = localStorage.getItem(ENV);
 
-    if (!localItems) {
+    if (!localStorageLists) {
       router.replace('/');
       return;
     }
-    const items = JSON.parse(localItems);
-    const storageList = items.filter((item: IList) => item.id === id);
+    const lists = JSON.parse(localStorageLists);
+    const storageList: IList[] = lists.filter((item: IList) => item.id === id);
     if (!storageList[0]) {
       return;
     }
+
+    setItemsToSum(storageList[0].items);
     setList(storageList[0]);
-
-    const totalPrice = handlePriceSum(storageList[0].items);
-
-    setPriceSum(treatCurrency(totalPrice?.toString()));
     setListTitle(storageList[0].name);
-    setLocalItems(items);
+    setLocalItems(lists);
     setItems(storageList[0]?.items);
   }, [router.query.id, listRecoil]);
 
@@ -351,7 +326,7 @@ const List: NextPage = ({ children }: any) => {
       <Layout>
         <Box maxW={'900px'} w="100%">
           <Text fontSize={'2xl'} fontWeight="bold">
-            {priceSum}
+            {itemsTotalSum}
           </Text>
           <Editable
             variant={'flushed'}
