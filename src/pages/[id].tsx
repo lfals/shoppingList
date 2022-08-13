@@ -83,16 +83,6 @@ const List: NextPage = ({ children }: any) => {
   const [items, setItems] = useState([] as IProduct[]);
   const [localItemsArray, setLocalItems] = useState([] as any);
   const [itemToEdit, setItemToEdit] = useState({} as IProduct);
-  const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
-    useNumberInput({
-      step: 1,
-      min: 1,
-      max: 99,
-      precision: 0,
-    });
-  const inc = getIncrementButtonProps()
-  const dec = getDecrementButtonProps()
-  const input = getInputProps()
   const id = router.query.id;
 
   const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
@@ -167,6 +157,7 @@ const List: NextPage = ({ children }: any) => {
               price: price,
               image: imageLink,
               show: true,
+              qtd: 1
             },
           ],
         };
@@ -329,7 +320,6 @@ const List: NextPage = ({ children }: any) => {
 
   function multiplyByAmount(qtd: number, value: string) {
     const multPrice = parseFloat(value.replaceAll('.', '').replaceAll(',', '').replace('R$', '')) * qtd;
-    
     return treatCurrency(multPrice.toString());
   }
 

@@ -42,13 +42,13 @@ const List: NextPage = () => {
     const totalPrice = data.reduce((previousValue: any, currentValue: any) => {
       const currentPrice = currentValue.show
         ? parseFloat(
-            currentValue.price
-              .replaceAll('.', '')
-              .replaceAll(',', '')
-              .replace('R$', '')
-          )
+          currentValue.price
+            .replaceAll('.', '')
+            .replaceAll(',', '')
+            .replace('R$', '')
+        )
         : 0;
-      return previousValue + currentPrice;
+      return previousValue + currentPrice * currentValue.qtd;
     }, initialValue);
     return totalPrice;
   }
@@ -63,21 +63,19 @@ const List: NextPage = () => {
     const priceArray = listRecoil
       .map((list: any) => {
         return list.items.map((item: any) => {
-          return { price: item.price, show: item.show };
+          return { price: item.price, show: item.show, qtd: item.qtd };
         });
       })
       .flat(Infinity);
     setAmount(
       priceArray.reduce((previousValue: any, currentValue: any) => {
-        console.log(currentValue);
-
         const currentPrice = currentValue.show
           ? parseFloat(
-              currentValue.price
-                .replaceAll('.', '')
-                .replaceAll(',', '')
-                .replace('R$', '')
-            )
+            currentValue.price
+              .replaceAll('.', '')
+              .replaceAll(',', '')
+              .replace('R$', '')
+          ) * currentValue.qtd
           : 0;
         return previousValue + currentPrice;
       }, initialValue)
