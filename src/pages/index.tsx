@@ -6,13 +6,11 @@ import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import Layout from '../components/layout.component';
 import { listRecoilContext } from '../hooks/list.hook';
-import {
-  listAmountRecoilContext,
-  sumTotalValues,
-} from '../hooks/listAmount.hook';
+import sumAmountHook from '../hooks/listAmount.hook';
 
 const List: NextPage = () => {
-  const [listAmount, setListAmount] = useRecoilState(listAmountRecoilContext);
+  const [amount, setSumAmount] = sumAmountHook();
+
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
 
@@ -58,8 +56,7 @@ const List: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    const totalValue = sumTotalValues(listRecoil);
-    setListAmount(totalValue);
+    setSumAmount(listRecoil);
   }, [listRecoil]);
 
   return (
@@ -76,7 +73,7 @@ const List: NextPage = () => {
                 Total
               </Text>
               <Text fontSize={['3xl', '4xl', '5xl', '6xl']} fontWeight="bold">
-                {listAmount}
+                {amount}
               </Text>
             </Box>
             <Box>

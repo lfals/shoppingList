@@ -41,10 +41,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { uuid } from 'uuidv4';
 import { listRecoilContext } from '../hooks/list.hook';
-import {
-  listAmountRecoilContext,
-  sumTotalValues,
-} from '../hooks/listAmount.hook';
+import sumAmountHook from '../hooks/listAmount.hook';
 
 interface IList {
   id: string;
@@ -67,8 +64,8 @@ const Layout = ({ children }: any) => {
   const [show, setShow] = useState(false);
   const [lists, setLists] = useState([] as IList[]);
   const [toRemoveId, setToRemoveId] = useState('');
-  const [listAmount, setListAmount] = useRecoilState(listAmountRecoilContext);
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
+  const [amount, setSumAmount] = sumAmountHook();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isDrawerOpen,
@@ -162,8 +159,7 @@ const Layout = ({ children }: any) => {
   }, []);
 
   useEffect(() => {
-    const totalValue = sumTotalValues(listRecoil);
-    setListAmount(totalValue);
+    setSumAmount(listRecoil);
   }, [listRecoil]);
 
   const MenuList = () => {
@@ -218,7 +214,7 @@ const Layout = ({ children }: any) => {
         {lists.length > 0 && (
           <HStack w={'100%'} mt={'auto'} justifyContent="space-between">
             <Text fontSize={'xl'}>Valor total:</Text>
-            <Text fontSize={'xl'}>{listAmount}</Text>
+            <Text fontSize={'xl'}>{amount}</Text>
           </HStack>
         )}
       </VStack>
