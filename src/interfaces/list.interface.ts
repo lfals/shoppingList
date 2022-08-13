@@ -12,6 +12,7 @@ interface IProduct {
   image?: string;
   price: string;
   show?: boolean;
+  qtd: number;
 }
 
 export type { IList, IProduct };

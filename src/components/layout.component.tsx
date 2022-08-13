@@ -41,6 +41,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { uuid } from 'uuidv4';
 import { listRecoilContext } from '../hooks/list.hook';
+import {
+  listAmountRecoilContext,
+  sumTotalValues,
+} from '../hooks/listAmount.hook';
 
 interface IList {
   id: string;
@@ -63,7 +67,7 @@ const Layout = ({ children }: any) => {
   const [show, setShow] = useState(false);
   const [lists, setLists] = useState([] as IList[]);
   const [toRemoveId, setToRemoveId] = useState('');
-  const [amount, setAmount] = useState('');
+  const [listAmount, setListAmount] = useRecoilState(listAmountRecoilContext);
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -81,15 +85,6 @@ const Layout = ({ children }: any) => {
   function handleList(data: any) {
     localStorage.setItem(ENV, JSON.stringify(data));
     setLists(data);
-  }
-
-  function treatCurrency(value: string) {
-    const options = { minimumFractionDigits: 2 };
-    const result = new Intl.NumberFormat('pt-BR', options).format(
-      parseFloat(value) / 100
-    );
-
-    return `R$ ${result}`;
   }
 
   function handleEnterPress(e: any) {
@@ -167,29 +162,8 @@ const Layout = ({ children }: any) => {
   }, []);
 
   useEffect(() => {
-    const newList: any = listRecoil;
-    setLists(newList);
-    const initialValue = 0;
-    const priceArray = listRecoil
-      .map((list: any) => {
-        return list.items.map((item: any) => {
-          return { price: item.price, show: item.show, qtd: item.qtd };
-        });
-      })
-      .flat(Infinity);
-    setAmount(
-      priceArray.reduce((previousValue: any, currentValue: any) => {
-        const currentPrice = currentValue.show
-          ? parseFloat(
-              currentValue.price
-                .replaceAll('.', '')
-                .replaceAll(',', '')
-                .replace('R$', '')
-            ) * currentValue.qtd
-          : 0;
-        return previousValue + currentPrice;
-      }, initialValue)
-    );
+    const totalValue = sumTotalValues(listRecoil);
+    setListAmount(totalValue);
   }, [listRecoil]);
 
   const MenuList = () => {
@@ -244,7 +218,7 @@ const Layout = ({ children }: any) => {
         {lists.length > 0 && (
           <HStack w={'100%'} mt={'auto'} justifyContent="space-between">
             <Text fontSize={'xl'}>Valor total:</Text>
-            <Text fontSize={'xl'}>{treatCurrency(amount)}</Text>
+            <Text fontSize={'xl'}>{listAmount}</Text>
           </HStack>
         )}
       </VStack>

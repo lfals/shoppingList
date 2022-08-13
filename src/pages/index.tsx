@@ -1,13 +1,4 @@
-import {
-  Box,
-  Grid,
-  GridItem,
-  HStack,
-  Stack,
-  Text,
-  Tooltip,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -15,15 +6,17 @@ import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import Layout from '../components/layout.component';
 import { listRecoilContext } from '../hooks/list.hook';
+import {
+  listAmountRecoilContext,
+  sumTotalValues,
+} from '../hooks/listAmount.hook';
 
 const List: NextPage = () => {
-  const [amount, setAmount] = useState('');
+  const [listAmount, setListAmount] = useRecoilState(listAmountRecoilContext);
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
 
   function treatCurrency(value: any, cents: boolean) {
-    console.log(value);
-
     if (isNaN(value))
       value = value.replaceAll('.', '').replaceAll(',', '').replace('R$', '');
 
@@ -65,27 +58,8 @@ const List: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    const initialValue = 0;
-    const priceArray = listRecoil
-      .map((list: any) => {
-        return list.items.map((item: any) => {
-          return { price: item.price, show: item.show, qtd: item.qtd };
-        });
-      })
-      .flat(Infinity);
-    setAmount(
-      priceArray.reduce((previousValue: any, currentValue: any) => {
-        const currentPrice = currentValue.show
-          ? parseFloat(
-              currentValue.price
-                .replaceAll('.', '')
-                .replaceAll(',', '')
-                .replace('R$', '')
-            ) * currentValue.qtd
-          : 0;
-        return previousValue + currentPrice;
-      }, initialValue)
-    );
+    const totalValue = sumTotalValues(listRecoil);
+    setListAmount(totalValue);
   }, [listRecoil]);
 
   return (
@@ -102,7 +76,7 @@ const List: NextPage = () => {
                 Total
               </Text>
               <Text fontSize={['3xl', '4xl', '5xl', '6xl']} fontWeight="bold">
-                {treatCurrency(amount, true)}
+                {listAmount}
               </Text>
             </Box>
             <Box>

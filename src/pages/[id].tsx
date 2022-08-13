@@ -9,9 +9,6 @@ import {
   Flex,
   FormControl,
   FormLabel,
-  Grid,
-  GridItem,
-  HStack,
   Icon,
   Image,
   Input,
@@ -37,7 +34,7 @@ import {
   NumberInput,
   NumberInputField,
 } from '@chakra-ui/react';
-import { Field, Formik, useFormik } from 'formik';
+import { Field, Formik } from 'formik';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -50,11 +47,11 @@ import {
   TrashIcon,
   PlusIcon,
 } from '@radix-ui/react-icons';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { listRecoilContext } from '../hooks/list.hook';
 import Head from 'next/head';
 import searchImage from '../functions/search.function';
-import { IList } from '../interfaces/list.interface';
+import { IList, IProduct } from '../interfaces/list.interface';
 
 const List: NextPage = ({ children }: any) => {
   const router = useRouter();
