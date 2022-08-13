@@ -48,7 +48,7 @@ import {
   OpenInNewWindowIcon,
   Pencil2Icon,
   TrashIcon,
-  PlusIcon
+  PlusIcon,
 } from '@radix-ui/react-icons';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { listRecoilContext } from '../hooks/list.hook';
@@ -107,17 +107,16 @@ const List: NextPage = ({ children }: any) => {
   }
 
   function handlePriceSum(data: Array<any>) {
-
     const initialValue = 0;
 
     const totalPrice = data.reduce((previousValue: any, currentValue: any) => {
       const currentPrice = currentValue.show
         ? parseFloat(
-          currentValue.price
-            .replaceAll('.', '')
-            .replaceAll(',', '')
-            .replace('R$', '')
-        ) * currentValue.qtd
+            currentValue.price
+              .replaceAll('.', '')
+              .replaceAll(',', '')
+              .replace('R$', '')
+          ) * currentValue.qtd
         : 0;
       return previousValue + currentPrice;
     }, initialValue);
@@ -157,7 +156,7 @@ const List: NextPage = ({ children }: any) => {
               price: price,
               image: imageLink,
               show: true,
-              qtd: 1
+              qtd: 1,
             },
           ],
         };
@@ -182,8 +181,16 @@ const List: NextPage = ({ children }: any) => {
     const filtered = items.filter(
       (item: IProduct) => item.id !== itemToEdit?.id
     );
-    setItems([...filtered, { ...values, price: price, id: itemToEdit.id, show: itemToEdit.show, qtd: itemToEdit.qtd }]);
-
+    setItems([
+      ...filtered,
+      {
+        ...values,
+        price: price,
+        id: itemToEdit.id,
+        show: itemToEdit.show,
+        qtd: itemToEdit.qtd,
+      },
+    ]);
 
     const newArray = localItemsArray.map((item: IList) => {
       if (item.id === id) {
@@ -197,7 +204,7 @@ const List: NextPage = ({ children }: any) => {
               price: price,
               id: itemToEdit.id,
               show: itemToEdit.show,
-              qtd: itemToEdit.qtd
+              qtd: itemToEdit.qtd,
             },
           ],
         };
@@ -207,7 +214,13 @@ const List: NextPage = ({ children }: any) => {
 
     const totalPrice = handlePriceSum([
       ...filtered,
-      { ...values, price: price, id: itemToEdit.id, show: itemToEdit.show, qtd: itemToEdit.qtd },
+      {
+        ...values,
+        price: price,
+        id: itemToEdit.id,
+        show: itemToEdit.show,
+        qtd: itemToEdit.qtd,
+      },
     ]);
 
     setListRecoil(newArray);
@@ -319,7 +332,10 @@ const List: NextPage = ({ children }: any) => {
   }
 
   function multiplyByAmount(qtd: number, value: string) {
-    const multPrice = parseFloat(value.replaceAll('.', '').replaceAll(',', '').replace('R$', '')) * qtd;
+    const multPrice =
+      parseFloat(
+        value.replaceAll('.', '').replaceAll(',', '').replace('R$', '')
+      ) * qtd;
     return treatCurrency(multPrice.toString());
   }
 
@@ -372,7 +388,12 @@ const List: NextPage = ({ children }: any) => {
               borderBottom: '1px solid #fff',
             }}
           >
-            <EditablePreview w="100%" />
+            <EditablePreview
+              textOverflow={'ellipsis'}
+              whiteSpace="nowrap"
+              overflow={'hidden'}
+              w="780px"
+            />
             <EditableInput
               _focus={{
                 boxShadow: 'none',
@@ -432,11 +453,18 @@ const List: NextPage = ({ children }: any) => {
                         </Tooltip>
 
                         <Flex gap={4}>
-                          {product.qtd > 1 &&
-                            <Tooltip label={`Valor total: ${multiplyByAmount(product.qtd, product.price)}`} placement="top" hasArrow>
+                          {product.qtd > 1 && (
+                            <Tooltip
+                              label={`Valor total: ${multiplyByAmount(
+                                product.qtd,
+                                product.price
+                              )}`}
+                              placement="top"
+                              hasArrow
+                            >
                               <Text whiteSpace="nowrap">{product.qtd}x</Text>
                             </Tooltip>
-                          }
+                          )}
                           <Text whiteSpace="nowrap">{product.price}</Text>
                           <FormControl display="flex" alignItems="center">
                             <Switch
@@ -491,12 +519,35 @@ const List: NextPage = ({ children }: any) => {
                           </Text>
                         </Box>
                         <Flex>
-                          <NumberInput style={{ display: 'flex' }} min={1} max={99} value={product.qtd} onChange={(valueAsNumber: any) => { changeItemQtd(valueAsNumber, product.id) }}>
-                            <Button as={NumberDecrementStepper} variant="outline" mr={1}>
+                          <NumberInput
+                            style={{ display: 'flex' }}
+                            min={1}
+                            max={99}
+                            value={product.qtd}
+                            onChange={(valueAsNumber: any) => {
+                              changeItemQtd(valueAsNumber, product.id);
+                            }}
+                          >
+                            <Button
+                              as={NumberDecrementStepper}
+                              variant="outline"
+                              mr={1}
+                            >
                               <Icon fontSize={'xl'} as={MinusIcon} />
                             </Button>
-                            <NumberInputField color={'white'} maxW="52px" mr={1} p={2} textAlign={'center'} />
-                            <Button as={NumberIncrementStepper} variant="outline" color={'white'} mr={1}>
+                            <NumberInputField
+                              color={'white'}
+                              maxW="52px"
+                              mr={1}
+                              p={2}
+                              textAlign={'center'}
+                            />
+                            <Button
+                              as={NumberIncrementStepper}
+                              variant="outline"
+                              color={'white'}
+                              mr={1}
+                            >
                               <Icon fontSize={'xl'} as={PlusIcon} />
                             </Button>
                           </NumberInput>

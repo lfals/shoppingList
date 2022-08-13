@@ -149,7 +149,7 @@ const Layout = ({ children }: any) => {
               show: true,
             };
           }
-          if(item.qtd === undefined) {
+          if (item.qtd === undefined) {
             item = {
               ...item,
               qtd: 1,
@@ -181,11 +181,11 @@ const Layout = ({ children }: any) => {
       priceArray.reduce((previousValue: any, currentValue: any) => {
         const currentPrice = currentValue.show
           ? parseFloat(
-            currentValue.price
-              .replaceAll('.', '')
-              .replaceAll(',', '')
-              .replace('R$', '')
-          ) * currentValue.qtd
+              currentValue.price
+                .replaceAll('.', '')
+                .replaceAll(',', '')
+                .replace('R$', '')
+            ) * currentValue.qtd
           : 0;
         return previousValue + currentPrice;
       }, initialValue)
@@ -212,7 +212,15 @@ const Layout = ({ children }: any) => {
               >
                 <NextLink href={`/${item.id}`} key={i}>
                   <Link style={{ width: '100%' }}>
-                    <Text fontSize={'xl'}>{item.name}</Text>
+                    <Text
+                      fontSize={'xl'}
+                      textOverflow={'ellipsis'}
+                      whiteSpace="nowrap"
+                      overflow={'hidden'}
+                      w="150px"
+                    >
+                      {item.name}
+                    </Text>
                   </Link>
                 </NextLink>
                 <Button
@@ -307,7 +315,7 @@ const Layout = ({ children }: any) => {
           p={[4, 8]}
         >
           <Grid
-            templateRows={['150px  1fr']}
+            templateRows={['min-content  1fr']}
             templateColumns="1fr"
             gap="12px"
             justifyItems={'center'}

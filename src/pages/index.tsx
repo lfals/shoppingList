@@ -42,11 +42,11 @@ const List: NextPage = () => {
     const totalPrice = data.reduce((previousValue: any, currentValue: any) => {
       const currentPrice = currentValue.show
         ? parseFloat(
-          currentValue.price
-            .replaceAll('.', '')
-            .replaceAll(',', '')
-            .replace('R$', '')
-        )
+            currentValue.price
+              .replaceAll('.', '')
+              .replaceAll(',', '')
+              .replace('R$', '')
+          )
         : 0;
       return previousValue + currentPrice * currentValue.qtd;
     }, initialValue);
@@ -71,11 +71,11 @@ const List: NextPage = () => {
       priceArray.reduce((previousValue: any, currentValue: any) => {
         const currentPrice = currentValue.show
           ? parseFloat(
-            currentValue.price
-              .replaceAll('.', '')
-              .replaceAll(',', '')
-              .replace('R$', '')
-          ) * currentValue.qtd
+              currentValue.price
+                .replaceAll('.', '')
+                .replaceAll(',', '')
+                .replace('R$', '')
+            ) * currentValue.qtd
           : 0;
         return previousValue + currentPrice;
       }, initialValue)
@@ -135,7 +135,6 @@ const List: NextPage = () => {
                       cursor: 'pointer',
                       transition: '0.5s',
                     }}
-                    // _hover={{border: '2px solid #fff'}}
                     _hover={{ boxShadow: '0px 0px 8px 2px #FFFFFF' }}
                   >
                     <VStack justifyContent={'space-between'} h={'100%'}>
