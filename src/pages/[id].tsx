@@ -31,6 +31,11 @@ import {
   Editable,
   EditablePreview,
   EditableInput,
+  useNumberInput,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
 } from '@chakra-ui/react';
 import { Field, Formik, useFormik } from 'formik';
 import type { NextPage } from 'next';
@@ -39,9 +44,11 @@ import { useEffect, useState } from 'react';
 import Layout from '../components/layout.component';
 import { uuid } from 'uuidv4';
 import {
+  MinusIcon,
   OpenInNewWindowIcon,
   Pencil2Icon,
   TrashIcon,
+  PlusIcon
 } from '@radix-ui/react-icons';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { listRecoilContext } from '../hooks/list.hook';
@@ -62,6 +69,7 @@ interface IProduct {
   image?: string;
   price: string;
   show: boolean;
+  qtd: number;
 }
 
 const List: NextPage = ({ children }: any) => {
@@ -75,6 +83,16 @@ const List: NextPage = ({ children }: any) => {
   const [items, setItems] = useState([] as IProduct[]);
   const [localItemsArray, setLocalItems] = useState([] as any);
   const [itemToEdit, setItemToEdit] = useState({} as IProduct);
+  const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
+    useNumberInput({
+      step: 1,
+      min: 1,
+      max: 99,
+      precision: 0,
+    });
+  const inc = getIncrementButtonProps()
+  const dec = getDecrementButtonProps()
+  const input = getInputProps()
   const id = router.query.id;
 
   const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
@@ -84,6 +102,7 @@ const List: NextPage = ({ children }: any) => {
     name: '',
     store: '',
     link: '',
+    qtd: 1,
     show: true,
     price: '',
   };
@@ -108,7 +127,7 @@ const List: NextPage = ({ children }: any) => {
             .replaceAll('.', '')
             .replaceAll(',', '')
             .replace('R$', '')
-        )
+        ) * currentValue.qtd
         : 0;
       return previousValue + currentPrice;
     }, initialValue);
@@ -172,7 +191,7 @@ const List: NextPage = ({ children }: any) => {
     const filtered = items.filter(
       (item: IProduct) => item.id !== itemToEdit?.id
     );
-    setItems([...filtered, { ...values, price: price, id: itemToEdit.id, show: itemToEdit.show }]);
+    setItems([...filtered, { ...values, price: price, id: itemToEdit.id, show: itemToEdit.show, qtd: itemToEdit.qtd }]);
 
 
     const newArray = localItemsArray.map((item: IList) => {
@@ -186,7 +205,8 @@ const List: NextPage = ({ children }: any) => {
               image: itemToEdit.image,
               price: price,
               id: itemToEdit.id,
-              show: itemToEdit.show
+              show: itemToEdit.show,
+              qtd: itemToEdit.qtd
             },
           ],
         };
@@ -196,7 +216,7 @@ const List: NextPage = ({ children }: any) => {
 
     const totalPrice = handlePriceSum([
       ...filtered,
-      { ...values, price: price, id: itemToEdit.id, show: itemToEdit.show },
+      { ...values, price: price, id: itemToEdit.id, show: itemToEdit.show, qtd: itemToEdit.qtd },
     ]);
 
     setListRecoil(newArray);
@@ -277,6 +297,40 @@ const List: NextPage = ({ children }: any) => {
     setPriceSum(treatCurrency(totalPrice?.toString()));
     setListRecoil(newList);
     localStorage.setItem(ENV, JSON.stringify(newList));
+  }
+
+  function changeItemQtd(qtd: any, itemId: string) {
+    const newItems = items.map((item) => {
+      if (item.id === itemId) {
+        item = {
+          ...item,
+          qtd: qtd,
+        };
+      }
+      return item;
+    });
+
+    const newList = listRecoil.map((list: any) => {
+      if (list.id === id) {
+        list = {
+          ...list,
+          items: newItems,
+        };
+      }
+      return list;
+    });
+
+    const totalPrice = handlePriceSum(newItems);
+    setItems(newItems);
+    setPriceSum(treatCurrency(totalPrice?.toString()));
+    setListRecoil(newList);
+    localStorage.setItem(ENV, JSON.stringify(newList));
+  }
+
+  function multiplyByAmount(qtd: number, value: string) {
+    const multPrice = parseFloat(value.replaceAll('.', '').replaceAll(',', '').replace('R$', '')) * qtd;
+    
+    return treatCurrency(multPrice.toString());
   }
 
   useEffect(() => {
@@ -388,6 +442,11 @@ const List: NextPage = ({ children }: any) => {
                         </Tooltip>
 
                         <Flex gap={4}>
+                          {product.qtd > 1 &&
+                            <Tooltip label={`Valor total: ${multiplyByAmount(product.qtd, product.price)}`} placement="top" hasArrow>
+                              <Text whiteSpace="nowrap">{product.qtd}x</Text>
+                            </Tooltip>
+                          }
                           <Text whiteSpace="nowrap">{product.price}</Text>
                           <FormControl display="flex" alignItems="center">
                             <Switch
@@ -442,15 +501,27 @@ const List: NextPage = ({ children }: any) => {
                           </Text>
                         </Box>
                         <Flex>
+                          <NumberInput style={{ display: 'flex' }} min={1} max={99} value={product.qtd} onChange={(valueAsNumber: any) => { changeItemQtd(valueAsNumber, product.id) }}>
+                            <Button as={NumberDecrementStepper} variant="outline" mr={1}>
+                              <Icon fontSize={'xl'} as={MinusIcon} />
+                            </Button>
+                            <NumberInputField color={'white'} maxW="52px" mr={1} p={2} textAlign={'center'} />
+                            <Button as={NumberIncrementStepper} variant="outline" color={'white'} mr={1}>
+                              <Icon fontSize={'xl'} as={PlusIcon} />
+                            </Button>
+                          </NumberInput>
+
                           <Button
                             onClick={() => handleEdit(product.id)}
                             variant="ghost"
+                            mr={1}
                           >
                             <Icon fontSize={'xl'} as={Pencil2Icon} />
                           </Button>
                           <Button
                             onClick={() => handleDeleteItem(product.id)}
                             variant="ghost"
+                            mr={1}
                           >
                             <Icon fontSize={'xl'} as={TrashIcon} />
                           </Button>

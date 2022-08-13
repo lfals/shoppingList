@@ -56,6 +56,7 @@ interface IProduct {
   image?: string;
   price: string;
   show?: boolean;
+  qtd: number;
 }
 
 const Layout = ({ children }: any) => {
@@ -148,6 +149,12 @@ const Layout = ({ children }: any) => {
               show: true,
             };
           }
+          if(item.qtd === undefined) {
+            item = {
+              ...item,
+              qtd: 1,
+            };
+          }
           return item;
         });
         return list;
@@ -166,7 +173,7 @@ const Layout = ({ children }: any) => {
     const priceArray = listRecoil
       .map((list: any) => {
         return list.items.map((item: any) => {
-          return { price: item.price, show: item.show };
+          return { price: item.price, show: item.show, qtd: item.qtd };
         });
       })
       .flat(Infinity);
@@ -178,7 +185,7 @@ const Layout = ({ children }: any) => {
               .replaceAll('.', '')
               .replaceAll(',', '')
               .replace('R$', '')
-          )
+          ) * currentValue.qtd
           : 0;
         return previousValue + currentPrice;
       }, initialValue)
