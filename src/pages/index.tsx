@@ -27,6 +27,8 @@ const List: NextPage = () => {
   const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
 
   function treatCurrency(value: any, cents: boolean) {
+    console.log(value);
+
     if (isNaN(value))
       value = value.replaceAll('.', '').replaceAll(',', '').replace('R$', '');
 
@@ -51,6 +53,15 @@ const List: NextPage = () => {
       return previousValue + currentPrice * currentValue.qtd;
     }, initialValue);
     return totalPrice;
+  }
+
+  function itemsQuantity(items: Array<any>) {
+    const initialValue = 0;
+    return items.reduce(
+      (previousValue, currentValue) => previousValue + parseFloat(currentValue.qtd),
+      initialValue
+    );
+    //  sumWithInitial
   }
 
   useEffect(() => {
@@ -166,7 +177,7 @@ const List: NextPage = () => {
                             textAlign="center"
                             fontWeight="bold"
                           >
-                            {list.items.length}
+                            {itemsQuantity(list.items)}
                           </Text>
                         </VStack>
                         <VStack alignItems={'start'}>
