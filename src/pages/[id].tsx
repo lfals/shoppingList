@@ -98,16 +98,17 @@ const List: NextPage = ({ children }: any) => {
   }
 
   function handlePriceSum(data: Array<any>) {
+
     const initialValue = 0;
 
     const totalPrice = data.reduce((previousValue: any, currentValue: any) => {
       const currentPrice = currentValue.show
         ? parseFloat(
-            currentValue.price
-              .replaceAll('.', '')
-              .replaceAll(',', '')
-              .replace('R$', '')
-          )
+          currentValue.price
+            .replaceAll('.', '')
+            .replaceAll(',', '')
+            .replace('R$', '')
+        )
         : 0;
       return previousValue + currentPrice;
     }, initialValue);
@@ -171,8 +172,8 @@ const List: NextPage = ({ children }: any) => {
     const filtered = items.filter(
       (item: IProduct) => item.id !== itemToEdit?.id
     );
+    setItems([...filtered, { ...values, price: price, id: itemToEdit.id, show: itemToEdit.show }]);
 
-    setItems([...filtered, { ...values, price: price, id: itemToEdit.id }]);
 
     const newArray = localItemsArray.map((item: IList) => {
       if (item.id === id) {
@@ -185,6 +186,7 @@ const List: NextPage = ({ children }: any) => {
               image: itemToEdit.image,
               price: price,
               id: itemToEdit.id,
+              show: itemToEdit.show
             },
           ],
         };
@@ -194,7 +196,7 @@ const List: NextPage = ({ children }: any) => {
 
     const totalPrice = handlePriceSum([
       ...filtered,
-      { ...values, price: price, id: itemToEdit.id },
+      { ...values, price: price, id: itemToEdit.id, show: itemToEdit.show },
     ]);
 
     setListRecoil(newArray);
@@ -224,7 +226,6 @@ const List: NextPage = ({ children }: any) => {
 
   function handleEdit(productId: string) {
     const filtered = items.filter((item: IProduct) => item.id === productId);
-
     setItemToEdit(filtered[0]);
     setPrice(filtered[0].price);
     onOpen();
