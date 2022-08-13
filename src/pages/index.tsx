@@ -6,10 +6,10 @@ import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import Layout from '../components/layout.component';
 import { listRecoilContext } from '../hooks/list.hook';
-import sumAmountHook from '../hooks/listAmount.hook';
+import useSumListsTotalAmountHook from '../hooks/listsAmount.hook';
 
 const List: NextPage = () => {
-  const [amount, setSumAmount] = sumAmountHook();
+  const [amount, setSumAmount] = useSumListsTotalAmountHook();
 
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';

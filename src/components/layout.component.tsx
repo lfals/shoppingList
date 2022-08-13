@@ -41,7 +41,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { uuid } from 'uuidv4';
 import { listRecoilContext } from '../hooks/list.hook';
-import sumAmountHook from '../hooks/listAmount.hook';
+import useSumListsTotalAmountHook from '../hooks/listsAmount.hook';
 
 interface IList {
   id: string;
@@ -65,7 +65,7 @@ const Layout = ({ children }: any) => {
   const [lists, setLists] = useState([] as IList[]);
   const [toRemoveId, setToRemoveId] = useState('');
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
-  const [amount, setSumAmount] = sumAmountHook();
+  const [amount, setSumAmount] = useSumListsTotalAmountHook();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isDrawerOpen,

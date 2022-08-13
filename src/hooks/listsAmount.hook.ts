@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IList } from '../interfaces/list.interface';
 
-function sumAmountHook() {
+function useSumListsTotalAmountHook() {
   const [sumAmount, setSumAmount] = useState<IList[]>([]);
 
   function transformPriceToNumber(data: string): number {
@@ -45,4 +45,4 @@ function sumAmountHook() {
   return [amount, setSumAmount];
 }
 
-export default sumAmountHook;
+export default useSumListsTotalAmountHook;
