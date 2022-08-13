@@ -1,20 +1,5 @@
 import { atom } from 'recoil';
-
-interface IList {
-  id?: string;
-  name: string;
-  items: Array<IProduct>;
-}
-
-interface IProduct {
-  id: string;
-  name: string;
-  store: string;
-  link: string;
-  image?: string;
-  price: string;
-  show?: boolean;
-}
+import { IList } from '../interfaces/list.interface';
 
 export const listRecoilContext = atom({
   key: 'contexList',

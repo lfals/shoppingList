@@ -54,23 +54,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { listRecoilContext } from '../hooks/list.hook';
 import Head from 'next/head';
 import searchImage from '../functions/search.function';
-
-interface IList {
-  id?: string;
-  name: string;
-  items: Array<IProduct>;
-}
-
-interface IProduct {
-  id: string;
-  name: string;
-  store: string;
-  link: string;
-  image?: string;
-  price: string;
-  show: boolean;
-  qtd: number;
-}
+import { IList } from '../interfaces/list.interface';
 
 const List: NextPage = ({ children }: any) => {
   const router = useRouter();

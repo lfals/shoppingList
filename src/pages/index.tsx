@@ -16,11 +16,6 @@ import { useRecoilState } from 'recoil';
 import Layout from '../components/layout.component';
 import { listRecoilContext } from '../hooks/list.hook';
 
-interface IList {
-  id: string;
-  name: string;
-}
-
 const List: NextPage = () => {
   const [amount, setAmount] = useState('');
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
@@ -58,10 +53,10 @@ const List: NextPage = () => {
   function itemsQuantity(items: Array<any>) {
     const initialValue = 0;
     return items.reduce(
-      (previousValue, currentValue) => previousValue + parseFloat(currentValue.qtd),
+      (previousValue, currentValue) =>
+        previousValue + parseFloat(currentValue.qtd),
       initialValue
     );
-    //  sumWithInitial
   }
 
   useEffect(() => {

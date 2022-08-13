@@ -1,6 +1,6 @@
 import { atom } from 'recoil';
 
-export const listAmountCtx = atom({
+export const listAmountRecoilContext = atom({
   key: 'listSum',
   default: '',
 });
