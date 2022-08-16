@@ -2,7 +2,7 @@ interface IList {
   id: string;
   name: string;
   show: boolean;
-  items: Array<IProduct>;
+  items?: Array<IProduct>;
 }
 
 interface IProduct {

@@ -25,7 +25,7 @@ import { useRecoilState } from 'recoil';
 import { uuid } from 'uuidv4';
 import { listRecoilContext } from '../hooks/list.hook';
 import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
-import { IList } from '../interfaces/list.interface';
+import { IList, IProduct } from '../interfaces/list.interface';
 
 function MenuList() {
   const [show, setShow] = useState(false);
@@ -47,14 +47,15 @@ function MenuList() {
   }
 
   function handleEnterPress(e: any) {
-    const name = e.target.value;
+    const name: string = e.target.value;
 
     if (e.key === 'Enter') {
-      const id = uuid();
-      const defautList = [
+      const id: string = uuid();
+      const defautList: IList[] = [
         {
           id,
           name,
+          show: true,
           items: [],
         },
       ];
@@ -65,10 +66,10 @@ function MenuList() {
         const parsedStorage = JSON.parse(currentStorage);
 
         handleList([...parsedStorage, ...defautList]);
+        setListRecoil([...parsedStorage, ...defautList]);
       } else {
         handleList(defautList);
       }
-
       router.push(`/${id}`);
       setShow(false);
     }
