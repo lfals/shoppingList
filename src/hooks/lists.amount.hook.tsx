@@ -11,14 +11,19 @@ function useSumListsTotalAmountHook() {
   function sumTotalValues(lists: IList[]): any {
     const newList = lists
       .map((list) => {
-        return list.items.map((item) => {
-          if (item.show) {
-            return transformPriceToNumber(item.price) * item.qtd;
-          }
-        });
+        console.log(list.show);
+        if (list.show) {
+          return list.items.map((item) => {
+            if (item.show) {
+              return transformPriceToNumber(item.price) * item.qtd;
+            }
+          });
+        }
       })
       .flat(Infinity)
       .filter((value) => value !== undefined);
+
+    console.log(newList);
 
     const initialValue = 0;
     const totalValue = newList.reduce(

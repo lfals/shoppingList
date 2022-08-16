@@ -15,6 +15,7 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
+  FormControl,
   Grid,
   GridItem,
   Hide,
@@ -25,6 +26,7 @@ import {
   Link,
   list,
   Show,
+  Switch,
   Text,
   useDisclosure,
   VStack,
@@ -42,23 +44,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { uuid } from 'uuidv4';
 import { listRecoilContext } from '../hooks/list.hook';
 import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
-
-interface IList {
-  id: string;
-  name: string;
-  items: Array<IProduct>;
-}
-
-interface IProduct {
-  id: string;
-  name: string;
-  store: string;
-  link: string;
-  image?: string;
-  price: string;
-  show?: boolean;
-  qtd: number;
-}
+import { IList } from '../interfaces/list.interface';
 
 const Layout = ({ children }: any) => {
   const [show, setShow] = useState(false);
@@ -117,9 +103,24 @@ const Layout = ({ children }: any) => {
     onOpen();
   }
 
+  function handleListSwitch(e: any, id: string) {
+    console.log(e.target.checked, id);
+    const newList = listRecoil.map((list) => {
+      if (list.id === id) {
+        list = {
+          ...list,
+          show: e.target.checked,
+        };
+      }
+      return list;
+    });
+    setListRecoil(newList);
+    setLists(newList);
+    localStorage.setItem(ENV, JSON.stringify(newList));
+  }
+
   function handleDelete() {
     const newLists = lists.filter((item) => item.id !== toRemoveId);
-
     handleList(newLists);
 
     onClose();
@@ -134,21 +135,30 @@ const Layout = ({ children }: any) => {
     if (lists) {
       const parsedLists: Array<IList> = JSON.parse(lists);
       const checkIfItemHasShowField = parsedLists.map((list) => {
-        list.items = list.items.map((item) => {
-          if (item.show === undefined) {
-            item = {
-              ...item,
-              show: true,
-            };
-          }
-          if (item.qtd === undefined) {
-            item = {
-              ...item,
-              qtd: 1,
-            };
-          }
-          return item;
-        });
+        if (list.show === undefined) {
+          list = {
+            ...list,
+            show: true,
+          };
+        }
+        list = {
+          ...list,
+          items: list.items.map((item) => {
+            if (item.show === undefined) {
+              item = {
+                ...item,
+                show: true,
+              };
+            }
+            if (item.qtd === undefined) {
+              item = {
+                ...item,
+                qtd: 1,
+              };
+            }
+            return item;
+          }),
+        };
         return list;
       });
 
@@ -172,7 +182,7 @@ const Layout = ({ children }: any) => {
               <Icon fontSize={'xl'} as={PlusIcon} />
             </Button>
           </HStack>
-          {lists.map((item, i) => {
+          {listRecoil.map((item, i) => {
             return (
               <Flex
                 justifyContent={'space-between'}
@@ -193,6 +203,12 @@ const Layout = ({ children }: any) => {
                     </Text>
                   </Link>
                 </NextLink>
+                <Switch
+                  mr={2}
+                  defaultChecked={item.show}
+                  isChecked={item.show}
+                  onChange={(e) => handleListSwitch(e, item.id)}
+                />
                 <Button
                   p={0}
                   variant="ghost"

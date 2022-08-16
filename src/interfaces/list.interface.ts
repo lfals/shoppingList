@@ -1,6 +1,7 @@
 interface IList {
-  id?: string;
+  id: string;
   name: string;
+  show: boolean;
   items: Array<IProduct>;
 }
 
