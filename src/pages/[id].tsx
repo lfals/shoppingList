@@ -62,7 +62,7 @@ const List: NextPage = ({ children }: any) => {
   const [itemsTotalSum, setItemsToSum] = useSumItemsTotalAmountHook();
   const [listTitle, setListTitle] = useState(list.name);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState('R$ 0,00');
   const [items, setItems] = useState([] as IProduct[]);
   const [localItemsArray, setLocalItems] = useState([] as any);
   const [itemToEdit, setItemToEdit] = useState({} as IProduct);
@@ -77,7 +77,7 @@ const List: NextPage = ({ children }: any) => {
     link: '',
     qtd: 1,
     show: true,
-    price: '',
+    price: 'R$ 0,00',
   };
 
   function treatCurrency(value: string) {
@@ -136,7 +136,7 @@ const List: NextPage = ({ children }: any) => {
     setItems(storageList[0].items);
     localStorage.setItem(ENV, JSON.stringify(mapped));
     setListRecoil(mapped);
-    setPrice('');
+    setPrice('R$ 0,00');
     onClose();
   }
 
@@ -352,7 +352,6 @@ const List: NextPage = ({ children }: any) => {
               whiteSpace="nowrap"
               overflow={'hidden'}
               w={['300px', '450px', '550px', '600px', '700px']}
-
             />
             <EditableInput
               _focus={{
@@ -360,7 +359,6 @@ const List: NextPage = ({ children }: any) => {
                 borderBottom: '1px solid #fff',
                 borderRadius: '0px',
               }}
-
             />
           </Editable>
         </Box>
@@ -369,7 +367,7 @@ const List: NextPage = ({ children }: any) => {
             <Button
               onClick={() => {
                 onOpen();
-                setPrice('');
+                setPrice('R$ 0,00');
                 setItemToEdit(defaultValue);
               }}
             >
@@ -428,19 +426,20 @@ const List: NextPage = ({ children }: any) => {
                               >
                                 <Text
                                   whiteSpace="nowrap"
-                                  textDecoration={product.show ? '' : 'line-through'}
+                                  textDecoration={
+                                    product.show ? '' : 'line-through'
+                                  }
                                 >
                                   {product.qtd}x
                                 </Text>
                               </Tooltip>
                             </Show>
-
                           )}
                           <Text
                             whiteSpace="nowrap"
                             textDecoration={product.show ? '' : 'line-through'}
                           >
-                            {product.price}
+                            {product.price !== 'R$ 0,00' && product.price}
                           </Text>
                           <FormControl display="flex" alignItems="center">
                             <Switch
@@ -471,20 +470,23 @@ const List: NextPage = ({ children }: any) => {
                           bgColor="white"
                         />
                         <Box width={'100%'}>
-                          <Link href={product.link} target="_blank">
-                            <Flex
-                              alignItems={'center'}
-                              justifyContent={['space-between', 'flex-start']}
-                              gap="18"
-                            >
-                              <Text fontSize={'3xl'}>{product.store}</Text>
-                              <Icon
-                                color={'white'}
-                                fontSize="xl"
-                                as={OpenInNewWindowIcon}
-                              />
-                            </Flex>
-                          </Link>
+                          {product.store && (
+                            <Link href={product.link} target="_blank">
+                              <Flex
+                                alignItems={'center'}
+                                justifyContent={['space-between', 'flex-start']}
+                                gap="18"
+                              >
+                                <Text fontSize={'3xl'}>{product.store}</Text>
+                                <Icon
+                                  color={'white'}
+                                  fontSize="xl"
+                                  as={OpenInNewWindowIcon}
+                                />
+                              </Flex>
+                            </Link>
+                          )}
+
                           <Text
                             textOverflow={'ellipsis'}
                             whiteSpace="nowrap"
@@ -557,7 +559,7 @@ const List: NextPage = ({ children }: any) => {
         isOpen={isOpen}
         onClose={() => {
           onClose();
-          setPrice('');
+          setPrice('R$ 0,00');
         }}
         isCentered
       >
@@ -592,12 +594,7 @@ const List: NextPage = ({ children }: any) => {
                     </FormControl>
                     <FormControl>
                       <FormLabel>Loja</FormLabel>
-                      <Field
-                        as={Input}
-                        placeholder="Loja"
-                        name="store"
-                        required
-                      />
+                      <Field as={Input} placeholder="Loja" name="store" />
                     </FormControl>
                     <FormControl>
                       <FormLabel>Link</FormLabel>
@@ -606,7 +603,6 @@ const List: NextPage = ({ children }: any) => {
                         placeholder="Link"
                         name="link"
                         type="url"
-                        required
                       />
                     </FormControl>
                     <FormControl>
@@ -617,7 +613,6 @@ const List: NextPage = ({ children }: any) => {
                         placeholder="Preço"
                         onChange={(e: any) => handleCurrency(e.target.value)}
                         value={price}
-                        required
                       />
                     </FormControl>
                   </VStack>
@@ -629,7 +624,7 @@ const List: NextPage = ({ children }: any) => {
                     onClick={() => {
                       handleReset();
                       onClose();
-                      setPrice('');
+                      setPrice('R$ 0,00');
                     }}
                     variant="outline"
                   >
