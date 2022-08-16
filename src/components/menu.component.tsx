@@ -31,6 +31,7 @@ import { IList, IProduct } from '../interfaces/list.interface';
 
 function MenuList() {
   const [show, setShow] = useState(false);
+  const inputRef: any = useRef<any>(null);
   const [lists, setLists] = useState([] as IList[]);
   const [toRemoveId, setToRemoveId] = useState('');
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
@@ -83,7 +84,6 @@ function MenuList() {
   }
 
   function handleListSwitch(e: any, id: string) {
-    console.log(e.target.checked, id);
     const newList = listRecoil.map((list) => {
       if (list.id === id) {
         list = {
@@ -98,10 +98,10 @@ function MenuList() {
     localStorage.setItem(ENV, JSON.stringify(newList));
   }
   function handleDelete() {
-    
+
     const newLists = listRecoil.filter((item) => item.id !== toRemoveId);
     const newDeletedList = listRecoil.filter((item) => item.id === toRemoveId);
-    
+
     handleList(newLists);
     setListRecoil(newLists);
     onClose();
@@ -171,6 +171,12 @@ function MenuList() {
     setSumAmount(listRecoil);
   }, [listRecoil]);
 
+  useEffect(() => {
+    if (inputRef.current !== null) {
+      inputRef.current.focus();
+    }
+  }, [show]);
+
   return (
     <>
       <VStack h={'100%'} justifyContent="space-between">
@@ -225,6 +231,7 @@ function MenuList() {
               variant="flushed"
               placeholder="Nome da lista"
               onKeyDown={(e) => handleEnterPress(e)}
+              ref={inputRef}
             />
           )}
         </VStack>
