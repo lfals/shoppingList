@@ -283,9 +283,10 @@ const Layout = ({ children }: any) => {
           gridRowEnd={-1}
           bg={'#17181F'}
           p={[4, 8]}
+          overflowX='hidden'
         >
           <Grid
-            templateRows={['180px  1fr']}
+            templateRows={['120px  1fr']}
             templateColumns="1fr"
             gap="12px"
             justifyItems={'center'}

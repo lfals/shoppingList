@@ -32,6 +32,7 @@ import {
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
+  Show,
 } from '@chakra-ui/react';
 import { Field, Formik } from 'formik';
 import type { NextPage } from 'next';
@@ -332,13 +333,14 @@ const List: NextPage = ({ children }: any) => {
             variant={'flushed'}
             value={listTitle}
             color={'#fff'}
-            fontSize={'7xl'}
+            fontSize={['4xl', '5xl', '5xl', '6xl']}
             fontWeight="bold"
             onChange={(nextValue: string) => setListTitle(nextValue)}
             onSubmit={(nextValue: string) => updateListTitle(nextValue)}
             style={{
               transition: '0.5s',
               borderRadius: '0px',
+              display: 'flex',
             }}
             _hover={{
               borderBottom: '1px solid #fff',
@@ -348,7 +350,8 @@ const List: NextPage = ({ children }: any) => {
               textOverflow={'ellipsis'}
               whiteSpace="nowrap"
               overflow={'hidden'}
-              w={['300px', '350px', '400px', '600px', '750px']}
+              w={['300px', '450px', '550px', '600px', '700px']}
+
             />
             <EditableInput
               _focus={{
@@ -356,10 +359,11 @@ const List: NextPage = ({ children }: any) => {
                 borderBottom: '1px solid #fff',
                 borderRadius: '0px',
               }}
+
             />
           </Editable>
         </Box>
-        <Box maxW={'900px'} w="100%">
+        <Box maxW={'900px'} w="100%" pt={[0,0,4,4,4]}>
           <Flex w={'100%'} justifyContent="flex-start">
             <Button
               onClick={() => {
@@ -395,7 +399,7 @@ const List: NextPage = ({ children }: any) => {
                       borderRadius="12"
                       h={'64px'}
                     >
-                      <Flex flex="1" justifyContent={'space-between'} pr="4">
+                      <Flex flex="1" justifyContent={'space-between'} pr="2">
                         <Tooltip label={product.name} placement="top-start">
                           <Text
                             textOverflow={'ellipsis'}
@@ -410,16 +414,19 @@ const List: NextPage = ({ children }: any) => {
 
                         <Flex gap={4}>
                           {product.qtd > 1 && (
-                            <Tooltip
-                              label={`Valor total: ${multiplyByAmount(
-                                product.qtd,
-                                product.price
-                              )}`}
-                              placement="top"
-                              hasArrow
-                            >
-                              <Text whiteSpace="nowrap">{product.qtd}x</Text>
-                            </Tooltip>
+                            <Show above={'md'}>
+                              <Tooltip
+                                label={`Valor total: ${multiplyByAmount(
+                                  product.qtd,
+                                  product.price
+                                )}`}
+                                placement="top"
+                                hasArrow
+                              >
+                                <Text whiteSpace="nowrap">{product.qtd}x</Text>
+                              </Tooltip>
+                            </Show>
+
                           )}
                           <Text whiteSpace="nowrap">{product.price}</Text>
                           <FormControl display="flex" alignItems="center">

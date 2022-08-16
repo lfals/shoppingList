@@ -106,7 +106,7 @@ const List: NextPage = () => {
                     bgColor="#20212C"
                     borderRadius={'12px'}
                     h={'200px'}
-                    w={['95%', '95%', '95%', '200px']}
+                    w={['100%', '100%', '100%', '200px']}
                     style={{
                       marginInlineStart: '0px',
                       cursor: 'pointer',
