@@ -348,7 +348,7 @@ const List: NextPage = ({ children }: any) => {
               textOverflow={'ellipsis'}
               whiteSpace="nowrap"
               overflow={'hidden'}
-              w="780px"
+              w={['300px', '350px', '400px', '600px', '750px']}
             />
             <EditableInput
               _focus={{
