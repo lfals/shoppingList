@@ -3,7 +3,7 @@ import {
   transformPriceToNumber,
   transformNumberToPrice,
 } from '../functions/currency.treatment.function';
-import { IList, IProduct } from '../interfaces/list.interface';
+import { IProduct } from '../interfaces/list.interface';
 
 function useSumItemsTotalAmountHook() {
   const [sumAmount, setItemsToSum] = useState<IProduct[]>([]);

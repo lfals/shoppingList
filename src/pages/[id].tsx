@@ -327,7 +327,12 @@ const List: NextPage = ({ children }: any) => {
       </Head>
       <Layout>
         <Box maxW={'900px'} w="100%">
-          <Text fontSize={'2xl'} fontWeight="bold">
+          <Text
+            fontSize={'2xl'}
+            fontWeight="bold"
+            textDecoration={list.show ? '' : 'line-through'}
+            opacity={list.show ? '1' : '0.5'}
+          >
             {itemsTotalSum}
           </Text>
           <Editable
@@ -335,6 +340,7 @@ const List: NextPage = ({ children }: any) => {
             value={listTitle}
             color={'#fff'}
             fontSize={['4xl', '5xl', '5xl', '6xl']}
+
             fontWeight="bold"
             onChange={(nextValue: string) => setListTitle(nextValue)}
             onSubmit={(nextValue: string) => updateListTitle(nextValue)}
@@ -351,6 +357,8 @@ const List: NextPage = ({ children }: any) => {
               textOverflow={'ellipsis'}
               whiteSpace="nowrap"
               overflow={'hidden'}
+              textDecoration={list.show ? '' : 'line-through'}
+              opacity={list.show ? '1' : '0.5'}
               w={['300px', '450px', '550px', '600px', '700px']}
             />
             <EditableInput

@@ -1,134 +1,43 @@
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   Box,
   Button,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   Flex,
-  FormControl,
   Grid,
   GridItem,
   Hide,
   HStack,
   Icon,
   Image,
-  Input,
   Link,
-  list,
   Show,
-  Switch,
-  Text,
   useDisclosure,
-  VStack,
 } from '@chakra-ui/react';
-import {
-  Cross2Icon,
-  HamburgerMenuIcon,
-  PlusIcon,
-  TrashIcon,
-} from '@radix-ui/react-icons';
+import { Cross2Icon, HamburgerMenuIcon } from '@radix-ui/react-icons';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { uuid } from 'uuidv4';
+import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import { listRecoilContext } from '../hooks/list.hook';
 import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
 import { IList } from '../interfaces/list.interface';
 import MenuList from './menu.component';
 
 const Layout = ({ children }: any) => {
-  const [show, setShow] = useState(false);
-  const [lists, setLists] = useState([] as IList[]);
-  const [toRemoveId, setToRemoveId] = useState('');
+  const [, setLists] = useState([] as IList[]);
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
-  const [amount, setSumAmount] = useSumListsTotalAmountHook();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [, setSumAmount] = useSumListsTotalAmountHook();
   const {
     isOpen: isDrawerOpen,
     onOpen: onDrawerOpen,
     onClose: onDrawerClose,
   } = useDisclosure();
 
-  const cancelRef = useRef() as any;
-
-  const router = useRouter();
-
   const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
-
-  function handleList(data: any) {
-    localStorage.setItem(ENV, JSON.stringify(data));
-    setLists(data);
-  }
-
-  function handleEnterPress(e: any) {
-    const name = e.target.value;
-
-    if (e.key === 'Enter') {
-      const id = uuid();
-      const defautList = [
-        {
-          id,
-          name,
-          items: [],
-        },
-      ];
-
-      const currentStorage = localStorage.getItem(ENV);
-
-      if (currentStorage) {
-        const parsedStorage = JSON.parse(currentStorage);
-
-        handleList([...parsedStorage, ...defautList]);
-      } else {
-        handleList(defautList);
-      }
-
-      router.push(`/${id}`);
-      setShow(false);
-    }
-  }
-
-  function handleDeleteButton(id: string) {
-    setToRemoveId(id);
-    onOpen();
-  }
-
-  function handleListSwitch(e: any, id: string) {
-    console.log(e.target.checked, id);
-    const newList = listRecoil.map((list) => {
-      if (list.id === id) {
-        list = {
-          ...list,
-          show: e.target.checked,
-        };
-      }
-      return list;
-    });
-    setListRecoil(newList);
-    setLists(newList);
-    localStorage.setItem(ENV, JSON.stringify(newList));
-  }
-
-  function handleDelete() {
-    const newLists = lists.filter((item) => item.id !== toRemoveId);
-    handleList(newLists);
-
-    onClose();
-    if (router.query.id === toRemoveId) {
-      router.push('/');
-    }
-  }
 
   useEffect(() => {
     const lists = localStorage.getItem(ENV);

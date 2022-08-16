@@ -2,7 +2,7 @@ import { Box, HStack, Text, Tooltip, VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import Layout from '../components/layout.component';
 import { listRecoilContext } from '../hooks/list.hook';
