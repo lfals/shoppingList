@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -45,20 +46,14 @@ import { uuid } from 'uuidv4';
 import { listRecoilContext } from '../hooks/list.hook';
 import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
 import { IList } from '../interfaces/list.interface';
-import MenuList from './menu.component';
 
-const Layout = ({ children }: any) => {
+function MenuList() {
   const [show, setShow] = useState(false);
   const [lists, setLists] = useState([] as IList[]);
   const [toRemoveId, setToRemoveId] = useState('');
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const [amount, setSumAmount] = useSumListsTotalAmountHook();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    isOpen: isDrawerOpen,
-    onOpen: onDrawerOpen,
-    onClose: onDrawerClose,
-  } = useDisclosure();
 
   const cancelRef = useRef() as any;
 
@@ -175,94 +170,102 @@ const Layout = ({ children }: any) => {
 
   return (
     <>
-      <Grid
-        h="100vh"
-        overflowY={'hidden'}
-        templateRows="80px 1fr"
-        templateColumns={['1fr', '1fr', '200px 1fr', '300px 1fr']}
-      >
-        <Hide breakpoint="(max-width: 760px)">
-          <GridItem
-            gridColumnStart={1}
-            gridColumnEnd={2}
-            gridRowStart={2}
-            gridRowEnd={-1}
-            p="4"
-            bgColor="#20212C"
-          >
-            <MenuList />
-          </GridItem>
-        </Hide>
-        <GridItem
-          gridColumnStart={1}
-          gridColumnEnd={3}
-          gridRowStart={1}
-          gridRowEnd={-2}
-          bgColor="#20212C"
-        >
-          <HStack h={'100%'} px={3} justifyContent="space-between">
-            <NextLink href={'/'}>
-              <Link>
-                <Image
-                  src="/assets/images/logo.png"
-                  style={{
-                    filter: 'brightness(0) invert(1)',
-                    pointerEvents: 'none',
-                  }}
-                  alt="logo"
+      <VStack h={'100%'} justifyContent="space-between">
+        <VStack gap={4} w={'100%'} alignItems="flex-start">
+          <HStack w={'100%'} justifyContent="space-between">
+            <Text fontSize={'3xl'}>Listas</Text>
+            <Button p={0} onClick={() => setShow(true)}>
+              <Icon fontSize={'xl'} as={PlusIcon} />
+            </Button>
+          </HStack>
+          {listRecoil?.map((item, i) => {
+            return (
+              <Flex
+                justifyContent={'space-between'}
+                alignItems="center"
+                w="100%"
+                key={i}
+              >
+                <NextLink href={`/${item.id}`} key={i}>
+                  <Link style={{ width: '100%' }}>
+                    <Text
+                      fontSize={'xl'}
+                      textOverflow={'ellipsis'}
+                      whiteSpace="nowrap"
+                      overflow={'hidden'}
+                      w="150px"
+                    >
+                      {item.name}
+                    </Text>
+                  </Link>
+                </NextLink>
+                <Switch
+                  mr={2}
+                  defaultChecked={item.show}
+                  isChecked={item.show}
+                  onChange={(e) => handleListSwitch(e, item.id)}
                 />
-              </Link>
-            </NextLink>
-
-            <Show breakpoint="(max-width: 760px)">
-              <Flex alignItems={'center'} h="100%" p={'0 12px'}>
                 <Button
-                  colorScheme="teal"
-                  onClick={onDrawerOpen}
+                  p={0}
                   variant="ghost"
+                  onClick={() => handleDeleteButton(item.id)}
                 >
-                  <Icon as={HamburgerMenuIcon} fontSize="24" />
+                  <Icon fontSize={'xl'} as={TrashIcon} />
                 </Button>
               </Flex>
-            </Show>
+            );
+          })}
+          {show && (
+            <Input
+              variant="flushed"
+              placeholder="Nome da lista"
+              onKeyDown={(e) => handleEnterPress(e)}
+            />
+          )}
+        </VStack>
+        {lists.length > 0 && (
+          <HStack w={'100%'} mt={'auto'} justifyContent="space-between">
+            <Text fontSize={'xl'}>Valor total:</Text>
+            <Text fontSize={'xl'}>{amount}</Text>
           </HStack>
-        </GridItem>
+        )}
+      </VStack>
 
-        <GridItem
-          gridColumnStart={2}
-          gridColumnEnd={-2}
-          gridRowStart={2}
-          gridRowEnd={-1}
-          bg={'#17181F'}
-          p={[4, 8]}
-          overflowX="hidden"
-        >
-          <Grid
-            templateRows={['120px  1fr']}
-            templateColumns="1fr"
-            gap="12px"
-            justifyItems={'center'}
-            alignContent="center"
-          >
-            {children}
-          </Grid>
-        </GridItem>
-      </Grid>
+      <AlertDialog
+        isCentered
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Excluir Lista
+            </AlertDialogHeader>
 
-      <Drawer isOpen={isDrawerOpen} placement="left" onClose={onDrawerClose}>
-        <DrawerOverlay />
-        <DrawerContent bgColor={'#20212C'}>
-          <Box>
-            <DrawerCloseButton as={Cross2Icon} color="white" mt={2} mr={1} />
-          </Box>
-          <DrawerHeader></DrawerHeader>
-          <DrawerBody mt={4} py={5} px={3}>
-            <MenuList />
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+            <AlertDialogBody>
+              Você tem certeza? Você não pode desfazer esta ação depois.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancelar
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={() => {
+                  handleDelete();
+                }}
+                ml={3}
+              >
+                Deletar
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </>
   );
-};
+}
 
-export default Layout;
+export default MenuList;
