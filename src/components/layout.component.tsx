@@ -227,7 +227,7 @@ const Layout = ({ children }: any) => {
         h="100vh"
         overflowY={'hidden'}
         templateRows="80px 1fr"
-        templateColumns={['1fr', '1fr', '300px 1fr', '300px 1fr']}
+        templateColumns={['1fr', '1fr', '200px 1fr', '300px 1fr']}
       >
         <Hide breakpoint="(max-width: 760px)">
           <GridItem
@@ -285,7 +285,7 @@ const Layout = ({ children }: any) => {
           p={[4, 8]}
         >
           <Grid
-            templateRows={['min-content  1fr']}
+            templateRows={['180px  1fr']}
             templateColumns="1fr"
             gap="12px"
             justifyItems={'center'}
