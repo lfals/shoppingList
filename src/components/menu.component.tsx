@@ -158,7 +158,7 @@ function MenuList() {
               <Icon fontSize={'xl'} as={PlusIcon} />
             </Button>
           </HStack>
-          {listRecoil?.map((item, i) => {
+          {listRecoil?.map((list, i) => {
             return (
               <Flex
                 justifyContent={'space-between'}
@@ -166,7 +166,7 @@ function MenuList() {
                 w="100%"
                 key={i}
               >
-                <NextLink href={`/${item.id}`} key={i}>
+                <NextLink href={`/${list.id}`} key={i}>
                   <Link style={{ width: '100%' }}>
                     <Text
                       fontSize={'xl'}
@@ -174,21 +174,23 @@ function MenuList() {
                       whiteSpace="nowrap"
                       overflow={'hidden'}
                       w="150px"
+                      textDecoration={list.show ? '' : 'line-through'}
+                      opacity={list.show ? '1' : '0.5'}
                     >
-                      {item.name}
+                      {list.name}
                     </Text>
                   </Link>
                 </NextLink>
                 <Switch
                   mr={2}
-                  defaultChecked={item.show}
-                  isChecked={item.show}
-                  onChange={(e) => handleListSwitch(e, item.id)}
+                  defaultChecked={list.show}
+                  isChecked={list.show}
+                  onChange={(e) => handleListSwitch(e, list.id)}
                 />
                 <Button
                   p={0}
                   variant="ghost"
-                  onClick={() => handleDeleteButton(item.id)}
+                  onClick={() => handleDeleteButton(list.id)}
                 >
                   <Icon fontSize={'xl'} as={TrashIcon} />
                 </Button>
