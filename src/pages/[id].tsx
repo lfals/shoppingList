@@ -33,6 +33,8 @@ import {
   NumberInput,
   NumberInputField,
   Show,
+  HStack,
+  useToast,
 } from '@chakra-ui/react';
 
 import { Field, Formik } from 'formik';
@@ -47,6 +49,7 @@ import {
   Pencil2Icon,
   TrashIcon,
   PlusIcon,
+  CounterClockwiseClockIcon,
 } from '@radix-ui/react-icons';
 import { useRecoilState } from 'recoil';
 import { listRecoilContext } from '../hooks/list.hook';
@@ -57,6 +60,7 @@ import useSumItemsTotalAmountHook from '../hooks/items.amount.hook';
 
 const List: NextPage = ({ children }: any) => {
   const router = useRouter();
+  const toast = useToast();
   const [list, setList] = useState({} as IList);
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const [itemsTotalSum, setItemsToSum] = useSumItemsTotalAmountHook();
@@ -192,8 +196,9 @@ const List: NextPage = ({ children }: any) => {
   }
 
   function handleDeleteItem(productId: string) {
+    const oldItems = items;
+    const oldList = localItemsArray;
     const newItems = items.filter((item: IProduct) => item.id !== productId);
-
     const newArray = localItemsArray.map((item: IList) => {
       if (item.id === id) {
         item = {
@@ -208,6 +213,26 @@ const List: NextPage = ({ children }: any) => {
     setItems(newItems);
     setLocalItems(newArray);
     setListRecoil(newArray);
+    toast.closeAll();
+    toast({
+      position: 'bottom-right',
+      duration: 5000,
+      render: () => (
+        <HStack justifyContent={'end'} p={4}>
+          <Button leftIcon={<CounterClockwiseClockIcon />} colorScheme='red' onClick={() => undoDelete(oldList, oldItems)}>Desfazer</Button>
+        </HStack>
+      ),
+    })
+  }
+
+  function undoDelete(oldList: IList[], oldItems: IProduct[]) {
+    if (oldList !== undefined) {
+      localStorage.setItem(ENV, JSON.stringify(oldList));
+      setItems(oldItems);
+      setLocalItems(oldList);
+      setListRecoil(oldList);
+      toast.closeAll();
+    }
   }
 
   function handleEdit(productId: string) {

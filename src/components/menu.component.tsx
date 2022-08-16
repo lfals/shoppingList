@@ -6,6 +6,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
+  Box,
   Button,
   Flex,
   HStack,
@@ -15,9 +16,10 @@ import {
   Switch,
   Text,
   useDisclosure,
+  useToast,
   VStack,
 } from '@chakra-ui/react';
-import { PlusIcon, TrashIcon } from '@radix-ui/react-icons';
+import { PlusIcon, TrashIcon, CounterClockwiseClockIcon } from '@radix-ui/react-icons';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
@@ -34,7 +36,7 @@ function MenuList() {
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const [amount, setSumAmount] = useSumListsTotalAmountHook();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const toast = useToast()
   const cancelRef = useRef() as any;
 
   const router = useRouter();
@@ -95,15 +97,34 @@ function MenuList() {
     setLists(newList);
     localStorage.setItem(ENV, JSON.stringify(newList));
   }
-
   function handleDelete() {
-    const newLists = lists.filter((item) => item.id !== toRemoveId);
+    
+    const newLists = listRecoil.filter((item) => item.id !== toRemoveId);
+    const newDeletedList = listRecoil.filter((item) => item.id === toRemoveId);
+    
     handleList(newLists);
     setListRecoil(newLists);
-
     onClose();
     if (router.query.id === toRemoveId) {
       router.push('/');
+    }
+    toast({
+      position: 'bottom-right',
+      duration: 5000,
+      render: () => (
+        <HStack justifyContent={'end'} p={4}>
+          <Button leftIcon={<CounterClockwiseClockIcon />} colorScheme='red' onClick={() => undoDelete(newLists, newDeletedList)}>Desfazer</Button>
+        </HStack>
+      ),
+    })
+  }
+
+  function undoDelete(newLists: IList[], newDeletedList: IList[]) {
+    if (newDeletedList !== undefined) {
+      const prevList = [...newLists, ...newDeletedList];
+      handleList(prevList);
+      setListRecoil(prevList);
+      toast.closeAll()
     }
   }
 
@@ -228,7 +249,7 @@ function MenuList() {
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Você tem certeza? Você não pode desfazer esta ação depois.
+              Deseja realmente deletar a lista?
             </AlertDialogBody>
 
             <AlertDialogFooter>
