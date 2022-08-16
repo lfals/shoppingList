@@ -99,6 +99,7 @@ function MenuList() {
   function handleDelete() {
     const newLists = lists.filter((item) => item.id !== toRemoveId);
     handleList(newLists);
+    setListRecoil(newLists);
 
     onClose();
     if (router.query.id === toRemoveId) {
