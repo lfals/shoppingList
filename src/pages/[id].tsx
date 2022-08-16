@@ -364,7 +364,7 @@ const List: NextPage = ({ children }: any) => {
             />
           </Editable>
         </Box>
-        <Box maxW={'900px'} w="100%" pt={[0,0,4,4,4]}>
+        <Box maxW={'900px'} w="100%" pt={[0, 0, 4, 4, 4]}>
           <Flex w={'100%'} justifyContent="flex-start">
             <Button
               onClick={() => {
@@ -394,6 +394,7 @@ const List: NextPage = ({ children }: any) => {
                     bgColor={'#20212C'}
                     borderRadius={'12px'}
                     w="100%"
+                    opacity={product.show ? '1' : '0.5'}
                   >
                     <AccordionButton
                       backgroundColor={'#272833'}
@@ -408,6 +409,7 @@ const List: NextPage = ({ children }: any) => {
                             overflow={'hidden'}
                             w={['100px', '150px', '200px', '300px']}
                             textAlign="start"
+                            textDecoration={product.show ? '' : 'line-through'}
                           >
                             {product.name}
                           </Text>
@@ -424,12 +426,22 @@ const List: NextPage = ({ children }: any) => {
                                 placement="top"
                                 hasArrow
                               >
-                                <Text whiteSpace="nowrap">{product.qtd}x</Text>
+                                <Text
+                                  whiteSpace="nowrap"
+                                  textDecoration={product.show ? '' : 'line-through'}
+                                >
+                                  {product.qtd}x
+                                </Text>
                               </Tooltip>
                             </Show>
 
                           )}
-                          <Text whiteSpace="nowrap">{product.price}</Text>
+                          <Text
+                            whiteSpace="nowrap"
+                            textDecoration={product.show ? '' : 'line-through'}
+                          >
+                            {product.price}
+                          </Text>
                           <FormControl display="flex" alignItems="center">
                             <Switch
                               isChecked={product.show}
