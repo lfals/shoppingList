@@ -50,6 +50,7 @@ import {
   TrashIcon,
   PlusIcon,
   CounterClockwiseClockIcon,
+  QuestionMarkCircledIcon
 } from '@radix-ui/react-icons';
 import { useRecoilState } from 'recoil';
 import { listRecoilContext } from '../hooks/list.hook';
@@ -79,6 +80,7 @@ const List: NextPage = ({ children }: any) => {
     name: '',
     store: '',
     link: '',
+    image: '',
     qtd: 1,
     show: true,
     price: 'R$ 0,00',
@@ -110,8 +112,8 @@ const List: NextPage = ({ children }: any) => {
       console.error('storage vazio, fez merda aí');
       return;
     }
-
-    const imageLink = await searchImage(values.name);
+    let imageLink = values.image
+    if (!imageLink) imageLink = await searchImage(values.name);
 
     const mapped = localItemsArray.map((item: IList) => {
       if (item.id === id) {
@@ -144,7 +146,7 @@ const List: NextPage = ({ children }: any) => {
     onClose();
   }
 
-  function editItem(values: IProduct) {
+  async function editItem(values: IProduct) {
     const filtered = items.filter(
       (item: IProduct) => item.id !== itemToEdit?.id
     );
@@ -159,6 +161,9 @@ const List: NextPage = ({ children }: any) => {
       },
     ]);
 
+    let imageLink = values.image
+    if (!imageLink) imageLink = await searchImage(values.name);
+    
     const newArray = localItemsArray.map((item: IList) => {
       if (item.id === id) {
         item = {
@@ -167,7 +172,7 @@ const List: NextPage = ({ children }: any) => {
             ...filtered,
             {
               ...values,
-              image: itemToEdit.image,
+              image: imageLink,
               price: price,
               id: itemToEdit.id,
               show: itemToEdit.show,
@@ -501,7 +506,10 @@ const List: NextPage = ({ children }: any) => {
                           borderRadius={'12px'}
                           src={product.image}
                           bgColor="white"
+                          alt="Imagem do produto"
+                          fallbackSrc='/assets/images/no-image.jfif'
                         />
+
                         <Box width={'100%'}>
                           {product.store && (
                             <Link href={product.link} target="_blank">
@@ -602,6 +610,7 @@ const List: NextPage = ({ children }: any) => {
             name: itemToEdit?.name,
             store: itemToEdit?.store,
             link: itemToEdit?.link,
+            image: itemToEdit?.image,
             price: itemToEdit?.price,
           }}
           onSubmit={(values) => handleSaveItem(values)}
@@ -633,9 +642,26 @@ const List: NextPage = ({ children }: any) => {
                       <FormLabel>Link</FormLabel>
                       <Field
                         as={Input}
-                        placeholder="Link"
+                        placeholder="Link para o produto"
                         name="link"
                         type="url"
+                      />
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel>
+                        Imagem
+                        <Tooltip
+                          label={'Nosso site utiliza o sistema de pesquisa do google para inserir a imagem de forma dinâmica. Caso queira colocar uma imagem específica insira o endereço dela abaixo.'}
+                          placement="top"
+                          hasArrow
+                        >
+                          <Icon ml={2} as={QuestionMarkCircledIcon} />
+                        </Tooltip>
+                      </FormLabel>
+                      <Field
+                        as={Input}
+                        placeholder="Endereço da imagem"
+                        name="image"
                       />
                     </FormControl>
                     <FormControl>
