@@ -1,17 +1,15 @@
 import { appAuth } from '../services/firebase.service';
 import {
   browserLocalPersistence,
-  getRedirectResult,
   GoogleAuthProvider,
   setPersistence,
   signInWithPopup,
-  signInWithRedirect,
   signOut,
   TwitterAuthProvider,
   User,
 } from 'firebase/auth';
 
-async function signInWithGoogle() {
+async function signInWithGoogle(): Promise<User | null> {
   return setPersistence(appAuth, browserLocalPersistence)
     .then(async () => {
       const provider = new GoogleAuthProvider();

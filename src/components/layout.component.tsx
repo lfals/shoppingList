@@ -42,63 +42,12 @@ import { IList } from '../interfaces/list.interface';
 import MenuList from './menu.component';
 
 const Layout = ({ children }: any) => {
-  const [, setLists] = useState([] as IList[]);
-  const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const [user, signIn, logOut] = useAuth();
-  const [, setSumAmount] = useSumListsTotalAmountHook();
   const {
     isOpen: isDrawerOpen,
     onOpen: onDrawerOpen,
     onClose: onDrawerClose,
   } = useDisclosure();
-
-  const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
-
-  useEffect(() => {
-    if (user) {
-      return;
-    }
-    const lists = localStorage.getItem(ENV);
-
-    if (lists) {
-      const parsedLists: Array<IList> = JSON.parse(lists);
-      const checkIfItemHasShowField = parsedLists.map((list) => {
-        if (list.show === undefined) {
-          list = {
-            ...list,
-            show: true,
-          };
-        }
-        list = {
-          ...list,
-          items: list.items.map((item) => {
-            if (item.show === undefined) {
-              item = {
-                ...item,
-                show: true,
-              };
-            }
-            if (item.qtd === undefined) {
-              item = {
-                ...item,
-                qtd: 1,
-              };
-            }
-            return item;
-          }),
-        };
-        return list;
-      });
-
-      setLists(checkIfItemHasShowField);
-      setListRecoil(checkIfItemHasShowField);
-      localStorage.setItem(ENV, JSON.stringify(checkIfItemHasShowField));
-    }
-  }, []);
-
-  useEffect(() => {
-    setSumAmount(listRecoil);
-  }, [listRecoil]);
 
   return (
     <>
