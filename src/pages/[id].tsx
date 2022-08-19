@@ -58,18 +58,18 @@ import Head from 'next/head';
 import searchImage from '../functions/search.function';
 import { IList, IProduct } from '../interfaces/list.interface';
 import useSumItemsTotalAmountHook from '../hooks/items.amount.hook';
+import useLists from '../hooks/save.list.hook';
 
 const List: NextPage = ({ children }: any) => {
   const router = useRouter();
   const toast = useToast();
   const [list, setList] = useState({} as IList);
-  const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
+  const [listRecoil, setLists] = useLists();
   const [itemsTotalSum, setItemsToSum] = useSumItemsTotalAmountHook();
   const [listTitle, setListTitle] = useState(list.name);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [price, setPrice] = useState('R$ 0,00');
   const [items, setItems] = useState([] as IProduct[]);
-  const [localItemsArray, setLocalItems] = useState([] as any);
   const [itemToEdit, setItemToEdit] = useState({} as IProduct);
   const id = router.query.id;
 
@@ -108,14 +108,10 @@ const List: NextPage = ({ children }: any) => {
   }
 
   async function createItem(values: any) {
-    if (!localItemsArray) {
-      console.error('storage vazio, fez merda aí');
-      return;
-    }
     let imageLink = values.image;
     if (!imageLink) imageLink = await searchImage(values.name);
 
-    const mapped = localItemsArray.map((item: IList) => {
+    const mapped = listRecoil.map((item: IList) => {
       if (item.id === id) {
         item = {
           ...item,
@@ -138,10 +134,8 @@ const List: NextPage = ({ children }: any) => {
     const storageList = mapped.filter((item: IList) => item.id === id);
 
     setItemsToSum(storageList[0]?.items);
-    setLocalItems(mapped);
     setItems(storageList[0].items);
-    localStorage.setItem(ENV, JSON.stringify(mapped));
-    setListRecoil(mapped);
+    setLists(mapped);
     setPrice('R$ 0,00');
     onClose();
   }
@@ -164,7 +158,7 @@ const List: NextPage = ({ children }: any) => {
     let imageLink = values.image;
     if (!imageLink) imageLink = await searchImage(values.name);
 
-    const newArray = localItemsArray.map((item: IList) => {
+    const newArray = listRecoil.map((item: IList) => {
       if (item.id === id) {
         item = {
           ...item,
@@ -195,16 +189,15 @@ const List: NextPage = ({ children }: any) => {
       },
     ]);
 
-    setListRecoil(newArray);
-    localStorage.setItem(ENV, JSON.stringify(newArray));
+    setLists(newArray);
     onClose();
   }
 
   function handleDeleteItem(productId: string) {
     const oldItems = items;
-    const oldList = localItemsArray;
+    const oldList = listRecoil;
     const newItems = items.filter((item: IProduct) => item.id !== productId);
-    const newArray = localItemsArray.map((item: IList) => {
+    const newArray = listRecoil.map((item: IList) => {
       if (item.id === id) {
         item = {
           ...item,
@@ -214,10 +207,8 @@ const List: NextPage = ({ children }: any) => {
       return item;
     });
 
-    localStorage.setItem(ENV, JSON.stringify(newArray));
     setItems(newItems);
-    setLocalItems(newArray);
-    setListRecoil(newArray);
+    setLists(newArray);
     toast.closeAll();
     toast({
       position: 'bottom-right',
@@ -238,10 +229,8 @@ const List: NextPage = ({ children }: any) => {
 
   function undoDelete(oldList: IList[], oldItems: IProduct[]) {
     if (oldList !== undefined) {
-      localStorage.setItem(ENV, JSON.stringify(oldList));
       setItems(oldItems);
-      setLocalItems(oldList);
-      setListRecoil(oldList);
+      setLists(oldList);
       toast.closeAll();
     }
   }
@@ -258,7 +247,7 @@ const List: NextPage = ({ children }: any) => {
       setListTitle(list.name);
       return;
     }
-    const newList = localItemsArray.map((list: IList) => {
+    const newList = listRecoil.map((list: IList) => {
       if (list.id === id) {
         list = {
           ...list,
@@ -268,9 +257,7 @@ const List: NextPage = ({ children }: any) => {
       return list;
     });
 
-    setLocalItems(newList);
-    localStorage.setItem(ENV, JSON.stringify(newList));
-    setListRecoil(newList);
+    setLists(newList);
   }
 
   function togglePriceView(e: any, itemId: string) {
@@ -296,8 +283,7 @@ const List: NextPage = ({ children }: any) => {
 
     setItems(newItems);
     setItemsToSum(newItems);
-    setListRecoil(newList);
-    localStorage.setItem(ENV, JSON.stringify(newList));
+    setLists(newList);
   }
 
   function changeItemQtd(qtd: any, itemId: string) {
@@ -323,8 +309,7 @@ const List: NextPage = ({ children }: any) => {
 
     setItemsToSum(newItems);
     setItems(newItems);
-    setListRecoil(newList);
-    localStorage.setItem(ENV, JSON.stringify(newList));
+    setLists(newList);
   }
 
   function multiplyByAmount(qtd: number, value: string) {
@@ -336,14 +321,9 @@ const List: NextPage = ({ children }: any) => {
   }
 
   useEffect(() => {
-    const localStorageLists = localStorage.getItem(ENV);
-
-    if (!localStorageLists) {
-      router.replace('/');
-      return;
-    }
-    const lists = JSON.parse(localStorageLists);
-    const storageList: IList[] = lists.filter((item: IList) => item.id === id);
+    const storageList: IList[] = listRecoil.filter(
+      (item: IList) => item.id === id
+    );
     if (!storageList[0]) {
       return;
     }
@@ -351,7 +331,6 @@ const List: NextPage = ({ children }: any) => {
     setItemsToSum(storageList[0].items);
     setList(storageList[0]);
     setListTitle(storageList[0].name);
-    setLocalItems(lists);
     setItems(storageList[0]?.items);
   }, [router.query.id, listRecoil]);
 

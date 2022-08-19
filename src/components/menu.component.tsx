@@ -122,6 +122,11 @@ function MenuList() {
     }
   }, [show]);
 
+  if (!listRecoil) {
+    router.replace('/');
+    return;
+  }
+
   return (
     <>
       <VStack h={'100%'} justifyContent="space-between">
