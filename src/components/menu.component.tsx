@@ -67,10 +67,9 @@ function MenuList() {
       if (currentStorage) {
         const parsedStorage = JSON.parse(currentStorage);
 
-        handleList([...parsedStorage, ...defautList]);
         setListRecoil([...parsedStorage, ...defautList]);
       } else {
-        handleList(defautList);
+        setListRecoil(defautList);
       }
       router.push(`/${id}`);
       setShow(false);
@@ -100,7 +99,6 @@ function MenuList() {
     const newLists = listRecoil.filter((item) => item.id !== toRemoveId);
     const newDeletedList = listRecoil.filter((item) => item.id === toRemoveId);
 
-    handleList(newLists);
     setListRecoil(newLists);
     onClose();
     if (router.query.id === toRemoveId) {
@@ -126,7 +124,6 @@ function MenuList() {
   function undoDelete(newLists: IList[], newDeletedList: IList[]) {
     if (newDeletedList !== undefined) {
       const prevList = [...newLists, ...newDeletedList];
-      handleList(prevList);
       setListRecoil(prevList);
       toast.closeAll();
     }
