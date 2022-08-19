@@ -31,11 +31,14 @@ import {
   HamburgerMenuIcon,
   TwitterLogoIcon,
 } from '@radix-ui/react-icons';
+import { onValue, ref } from 'firebase/database';
 import NextLink from 'next/link';
 import { useEffect } from 'react';
 import treatOldList from '../functions/handle.old.list.function';
 import useLists from '../hooks/save.list.hook';
 import useAuth from '../hooks/user.hook';
+import { IList } from '../interfaces/list.interface';
+import { db } from '../services/firebase.service';
 import MenuList from './menu.component';
 
 const Layout = ({ children }: any) => {
@@ -48,9 +51,37 @@ const Layout = ({ children }: any) => {
     onClose: onDrawerClose,
   } = useDisclosure();
 
-  useEffect(() => {
-    const checkIfItemHasShowField = treatOldList();
+  function treatListsFromFB(data: IList[]) {
+    const treated = data.map((list) => {
+      if (list.items === undefined) {
+        list = {
+          ...list,
+          items: [],
+        };
+      }
+      return list;
+    });
+    setLists(treated);
+  }
 
+  function getCloudList(userId: string) {
+    const starCountRef = ref(db, 'users/' + userId);
+    onValue(starCountRef, (snapshot) => {
+      const val = snapshot.val();
+      const data = val;
+      if (data) {
+        treatListsFromFB(data.data);
+      }
+    });
+  }
+
+  useEffect(() => {
+    if (user) {
+      getCloudList(user.uid);
+      return;
+    }
+
+    const checkIfItemHasShowField = treatOldList();
     if (checkIfItemHasShowField) {
       setLists(checkIfItemHasShowField);
     }

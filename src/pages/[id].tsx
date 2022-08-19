@@ -52,15 +52,13 @@ import {
   CounterClockwiseClockIcon,
   QuestionMarkCircledIcon,
 } from '@radix-ui/react-icons';
-import { useRecoilState } from 'recoil';
-import { listRecoilContext } from '../hooks/list.hook';
 import Head from 'next/head';
 import searchImage from '../functions/search.function';
 import { IList, IProduct } from '../interfaces/list.interface';
 import useSumItemsTotalAmountHook from '../hooks/items.amount.hook';
 import useLists from '../hooks/save.list.hook';
 
-const List: NextPage = ({ children }: any) => {
+const List: NextPage = () => {
   const router = useRouter();
   const toast = useToast();
   const [list, setList] = useState({} as IList);
@@ -72,8 +70,6 @@ const List: NextPage = ({ children }: any) => {
   const [items, setItems] = useState([] as IProduct[]);
   const [itemToEdit, setItemToEdit] = useState({} as IProduct);
   const id = router.query.id;
-
-  const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
 
   const defaultValue = {
     id: '',

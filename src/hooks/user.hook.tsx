@@ -1,4 +1,5 @@
-import { User } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import handleAuth from '../services/auth.service';
@@ -8,21 +9,22 @@ import { listRecoilContext } from './list.hook';
 function useAuth() {
   const { signIn, signOut } = handleAuth;
   const [user, setUser] = useState<User | null>();
-  const [, setListRecoil] = useRecoilState(listRecoilContext);
+  const router = useRouter();
 
   async function twitter() {
-    const newUser = await signIn.twitter();
-    setListRecoil([]);
-    setUser(newUser);
+    router.push('/');
+
+    signIn.twitter();
   }
   async function google() {
-    const newUser = await signIn.google();
-    setUser(newUser);
+    router.push('/');
+
+    signIn.google();
   }
 
   async function logOut() {
     signOut();
-    setUser(null);
+    router.push('/');
   }
 
   const login = {
@@ -31,7 +33,13 @@ function useAuth() {
   };
 
   useEffect(() => {
-    setUser(appAuth.currentUser);
+    onAuthStateChanged(appAuth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+    });
   }, []);
 
   return [user, login, logOut] as const;

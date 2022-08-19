@@ -6,6 +6,10 @@ export default function treatOldList(): Array<IList> | [] {
 
   if (lists) {
     const parsedLists: Array<IList> = JSON.parse(lists);
+    console.log('Parsed List', parsedLists.length === 0);
+    if (parsedLists.length === 0) {
+      return [];
+    }
     const checkIfItemHasShowField = parsedLists.map((list) => {
       if (list.show === undefined) {
         list = {
