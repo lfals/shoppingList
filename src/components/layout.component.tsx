@@ -25,7 +25,6 @@ import {
   Avatar,
 } from '@chakra-ui/react';
 import {
-  ChevronDownIcon,
   Cross2Icon,
   EnterIcon,
   ExitIcon,
@@ -33,12 +32,7 @@ import {
   TwitterLogoIcon,
 } from '@radix-ui/react-icons';
 import NextLink from 'next/link';
-import { useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
-import { listRecoilContext } from '../hooks/list.hook';
-import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
 import useAuth from '../hooks/user.hook';
-import { IList } from '../interfaces/list.interface';
 import MenuList from './menu.component';
 
 const Layout = ({ children }: any) => {
