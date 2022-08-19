@@ -1,5 +1,4 @@
-import axios from "axios";
-const API_KEY = process.env.SEARCH_API;
+import axios from 'axios';
 
 const searchImage = async (searchTerm: string) => {
   try {
@@ -8,7 +7,7 @@ const searchImage = async (searchTerm: string) => {
     );
     return response.data.items[0].link;
   } catch (error: any) {
-    return "";
+    return '';
   }
 };
 

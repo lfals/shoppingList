@@ -50,7 +50,7 @@ import {
   TrashIcon,
   PlusIcon,
   CounterClockwiseClockIcon,
-  QuestionMarkCircledIcon
+  QuestionMarkCircledIcon,
 } from '@radix-ui/react-icons';
 import { useRecoilState } from 'recoil';
 import { listRecoilContext } from '../hooks/list.hook';
@@ -112,7 +112,7 @@ const List: NextPage = ({ children }: any) => {
       console.error('storage vazio, fez merda aí');
       return;
     }
-    let imageLink = values.image
+    let imageLink = values.image;
     if (!imageLink) imageLink = await searchImage(values.name);
 
     const mapped = localItemsArray.map((item: IList) => {
@@ -161,9 +161,9 @@ const List: NextPage = ({ children }: any) => {
       },
     ]);
 
-    let imageLink = values.image
+    let imageLink = values.image;
     if (!imageLink) imageLink = await searchImage(values.name);
-    
+
     const newArray = localItemsArray.map((item: IList) => {
       if (item.id === id) {
         item = {
@@ -224,10 +224,16 @@ const List: NextPage = ({ children }: any) => {
       duration: 5000,
       render: () => (
         <HStack justifyContent={'end'} p={4}>
-          <Button leftIcon={<CounterClockwiseClockIcon />} colorScheme='red' onClick={() => undoDelete(oldList, oldItems)}>Desfazer</Button>
+          <Button
+            leftIcon={<CounterClockwiseClockIcon />}
+            colorScheme="red"
+            onClick={() => undoDelete(oldList, oldItems)}
+          >
+            Desfazer
+          </Button>
         </HStack>
       ),
-    })
+    });
   }
 
   function undoDelete(oldList: IList[], oldItems: IProduct[]) {
@@ -370,7 +376,6 @@ const List: NextPage = ({ children }: any) => {
             value={listTitle}
             color={'#fff'}
             fontSize={['4xl', '5xl', '5xl', '6xl']}
-
             fontWeight="bold"
             onChange={(nextValue: string) => setListTitle(nextValue)}
             onSubmit={(nextValue: string) => updateListTitle(nextValue)}
@@ -507,7 +512,7 @@ const List: NextPage = ({ children }: any) => {
                           src={product.image}
                           bgColor="white"
                           alt="Imagem do produto"
-                          fallbackSrc='/assets/images/no-image.jfif'
+                          fallbackSrc="/assets/images/no-image.jfif"
                         />
 
                         <Box width={'100%'}>
@@ -651,7 +656,9 @@ const List: NextPage = ({ children }: any) => {
                       <FormLabel>
                         Imagem
                         <Tooltip
-                          label={'Nosso site utiliza o sistema de pesquisa do google para inserir a imagem de forma dinâmica. Caso queira colocar uma imagem específica insira o endereço dela abaixo.'}
+                          label={
+                            'Nosso site utiliza o sistema de pesquisa do google para inserir a imagem de forma dinâmica. Caso queira colocar uma imagem específica insira o endereço dela abaixo.'
+                          }
                           placement="top"
                           hasArrow
                         >

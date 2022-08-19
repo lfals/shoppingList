@@ -6,7 +6,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
-  Box,
   Button,
   Flex,
   HStack,
@@ -27,26 +26,22 @@ import {
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
-import { useRecoilState } from 'recoil';
 import { uuid } from 'uuidv4';
-import { listRecoilContext } from '../hooks/list.hook';
 import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
-import { IList, IProduct } from '../interfaces/list.interface';
+import { IList } from '../interfaces/list.interface';
+import useLists from '../hooks/save.list.hook';
 
 function MenuList() {
   const [show, setShow] = useState(false);
   const inputRef: any = useRef<any>(null);
   const [toRemoveId, setToRemoveId] = useState('');
-  const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
+  const [listRecoil, setLists] = useLists();
   const [amount] = useSumListsTotalAmountHook();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const toast = useToast();
   const cancelRef = useRef() as any;
-
   const router = useRouter();
-
-  const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
 
   function handleEnterPress(e: any) {
     const name: string = e.target.value;
@@ -62,17 +57,10 @@ function MenuList() {
         },
       ];
 
-      const currentStorage = localStorage.getItem(ENV);
-
-      if (currentStorage) {
-        const parsedStorage = JSON.parse(currentStorage);
-
-        setListRecoil([...parsedStorage, ...defautList]);
-      } else {
-        setListRecoil(defautList);
-      }
-      router.push(`/${id}`);
+      setLists([...listRecoil, ...defautList]);
+      onClose();
       setShow(false);
+      router.push(`/${id}`);
     }
   }
 
@@ -91,15 +79,14 @@ function MenuList() {
       }
       return list;
     });
-    setListRecoil(newList);
-    localStorage.setItem(ENV, JSON.stringify(newList));
+    setLists(newList);
   }
 
   function handleDelete() {
     const newLists = listRecoil.filter((item) => item.id !== toRemoveId);
     const newDeletedList = listRecoil.filter((item) => item.id === toRemoveId);
 
-    setListRecoil(newLists);
+    setLists(newLists);
     onClose();
     if (router.query.id === toRemoveId) {
       router.push('/');
@@ -124,7 +111,7 @@ function MenuList() {
   function undoDelete(newLists: IList[], newDeletedList: IList[]) {
     if (newDeletedList !== undefined) {
       const prevList = [...newLists, ...newDeletedList];
-      setListRecoil(prevList);
+      setLists(prevList);
       toast.closeAll();
     }
   }

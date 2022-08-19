@@ -4,7 +4,6 @@ import {
   transformNumberToPrice,
   transformPriceToNumber,
 } from '../functions/currency.treatment.function';
-import { IList } from '../interfaces/list.interface';
 import { listRecoilContext } from './list.hook';
 
 function useSumListsTotalAmountHook() {
