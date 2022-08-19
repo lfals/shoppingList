@@ -1,4 +1,4 @@
-import { auth } from '../services/firebase.service';
+import { appAuth } from '../services/firebase.service';
 import {
   browserLocalPersistence,
   getRedirectResult,
@@ -8,85 +8,62 @@ import {
   signInWithRedirect,
   signOut,
   TwitterAuthProvider,
+  User,
 } from 'firebase/auth';
 
-function signInWithGoogle() {
-  setPersistence(auth, browserLocalPersistence)
-    .then(() => {
+async function signInWithGoogle() {
+  return setPersistence(appAuth, browserLocalPersistence)
+    .then(async () => {
       const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider)
+      return signInWithPopup(appAuth, provider)
         .then((result) => {
-          // This gives you a Google Access Token. You can use it to access the Google API.
           const credential = GoogleAuthProvider.credentialFromResult(result);
           if (!credential) {
             console.log(`credentials vazio`);
-            return;
+            return null;
           }
-          const token = credential.accessToken;
-          console.log(token);
 
           const user = result.user;
-          console.log(user);
-
-          // ...
+          return user;
         })
         .catch((error) => {
-          // Handle Errors here.
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          // The email of the user's account used.
-          const email = error.customData.email;
-          // The AuthCredential type that was used.
-          const credential = GoogleAuthProvider.credentialFromError(error);
-          // ...
+          console.log(error);
+          return null;
         });
     })
     .catch((error) => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
+      console.log(error);
+
+      return null;
     });
 }
 
-function signInWithTwitter() {
-  setPersistence(auth, browserLocalPersistence)
-    .then(() => {
+async function signInWithTwitter(): Promise<User | null> {
+  return setPersistence(appAuth, browserLocalPersistence)
+    .then(async () => {
       const provider = new TwitterAuthProvider();
-      signInWithPopup(auth, provider)
+      return signInWithPopup(appAuth, provider)
         .then((result) => {
-          // This gives you a Google Access Token. You can use it to access the Google API.
           const credential = TwitterAuthProvider.credentialFromResult(result);
           if (!credential) {
             console.log('erro no credential');
-            return;
+            return null;
           }
-          const token = credential.accessToken;
-          const secret = credential.secret;
           const user = result.user;
-          // ...
+          return user;
         })
         .catch((error) => {
-          // Handle Errors here.
           console.log(error);
-
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          // The email of the user's account used.
-          const email = error.customData.email;
-          // The AuthCredential type that was used.
-          const credential = TwitterAuthProvider.credentialFromError(error);
-          // ...
+          return null;
         });
     })
     .catch((error) => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
+      return null;
     });
 }
 
 function signOutApp() {
-  signOut(auth)
+  signOut(appAuth)
     .then(() => {
       // Sign-out successful.
     })
