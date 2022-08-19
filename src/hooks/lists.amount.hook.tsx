@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import {
   transformNumberToPrice,
   transformPriceToNumber,
 } from '../functions/currency.treatment.function';
 import { IList } from '../interfaces/list.interface';
+import { listRecoilContext } from './list.hook';
 
 function useSumListsTotalAmountHook() {
-  const [sumAmount, setSumAmount] = useState<IList[]>([]);
+  const [listRecoil] = useRecoilState(listRecoilContext);
+  const [amount, setAmount] = useState('');
 
-  function sumTotalValues(lists: IList[]): any {
-    const newList = lists
+  function sumTotalValues(): any {
+    const newList = listRecoil
       .map((list) => {
         if (list.show) {
           return list.items.map((item) => {
@@ -22,7 +25,6 @@ function useSumListsTotalAmountHook() {
       .flat(Infinity)
       .filter((value) => value !== undefined);
 
-
     const initialValue = 0;
     const totalValue = newList.reduce(
       (previousValue: any, currentValue: any) => {
@@ -34,9 +36,11 @@ function useSumListsTotalAmountHook() {
     return transformNumberToPrice(totalValue);
   }
 
-  const amount = sumTotalValues(sumAmount);
+  useEffect(() => {
+    setAmount(sumTotalValues());
+  }, [listRecoil]);
 
-  return [amount, setSumAmount];
+  return [amount];
 }
 
 export default useSumListsTotalAmountHook;

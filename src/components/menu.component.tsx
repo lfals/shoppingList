@@ -19,7 +19,11 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { PlusIcon, TrashIcon, CounterClockwiseClockIcon } from '@radix-ui/react-icons';
+import {
+  PlusIcon,
+  TrashIcon,
+  CounterClockwiseClockIcon,
+} from '@radix-ui/react-icons';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
@@ -32,22 +36,17 @@ import { IList, IProduct } from '../interfaces/list.interface';
 function MenuList() {
   const [show, setShow] = useState(false);
   const inputRef: any = useRef<any>(null);
-  const [lists, setLists] = useState([] as IList[]);
   const [toRemoveId, setToRemoveId] = useState('');
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
-  const [amount, setSumAmount] = useSumListsTotalAmountHook();
+  const [amount] = useSumListsTotalAmountHook();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast()
+
+  const toast = useToast();
   const cancelRef = useRef() as any;
 
   const router = useRouter();
 
   const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
-
-  function handleList(data: any) {
-    localStorage.setItem(ENV, JSON.stringify(data));
-    setLists(data);
-  }
 
   function handleEnterPress(e: any) {
     const name: string = e.target.value;
@@ -94,11 +93,10 @@ function MenuList() {
       return list;
     });
     setListRecoil(newList);
-    setLists(newList);
     localStorage.setItem(ENV, JSON.stringify(newList));
   }
-  function handleDelete() {
 
+  function handleDelete() {
     const newLists = listRecoil.filter((item) => item.id !== toRemoveId);
     const newDeletedList = listRecoil.filter((item) => item.id === toRemoveId);
 
@@ -113,10 +111,16 @@ function MenuList() {
       duration: 5000,
       render: () => (
         <HStack justifyContent={'end'} p={4}>
-          <Button leftIcon={<CounterClockwiseClockIcon />} colorScheme='red' onClick={() => undoDelete(newLists, newDeletedList)}>Desfazer</Button>
+          <Button
+            leftIcon={<CounterClockwiseClockIcon />}
+            colorScheme="red"
+            onClick={() => undoDelete(newLists, newDeletedList)}
+          >
+            Desfazer
+          </Button>
         </HStack>
       ),
-    })
+    });
   }
 
   function undoDelete(newLists: IList[], newDeletedList: IList[]) {
@@ -124,52 +128,9 @@ function MenuList() {
       const prevList = [...newLists, ...newDeletedList];
       handleList(prevList);
       setListRecoil(prevList);
-      toast.closeAll()
+      toast.closeAll();
     }
   }
-
-  useEffect(() => {
-    const lists = localStorage.getItem(ENV);
-
-    if (lists) {
-      const parsedLists: Array<IList> = JSON.parse(lists);
-      const checkIfItemHasShowField = parsedLists.map((list) => {
-        if (list.show === undefined) {
-          list = {
-            ...list,
-            show: true,
-          };
-        }
-        list = {
-          ...list,
-          items: list.items.map((item) => {
-            if (item.show === undefined) {
-              item = {
-                ...item,
-                show: true,
-              };
-            }
-            if (item.qtd === undefined) {
-              item = {
-                ...item,
-                qtd: 1,
-              };
-            }
-            return item;
-          }),
-        };
-        return list;
-      });
-
-      setLists(checkIfItemHasShowField);
-      setListRecoil(checkIfItemHasShowField);
-      localStorage.setItem(ENV, JSON.stringify(checkIfItemHasShowField));
-    }
-  }, []);
-
-  useEffect(() => {
-    setSumAmount(listRecoil);
-  }, [listRecoil]);
 
   useEffect(() => {
     if (inputRef.current !== null) {
@@ -235,7 +196,7 @@ function MenuList() {
             />
           )}
         </VStack>
-        {lists.length > 0 && (
+        {listRecoil.length > 0 && (
           <HStack w={'100%'} mt={'auto'} justifyContent="space-between">
             <Text fontSize={'xl'}>Valor total:</Text>
             <Text fontSize={'xl'}>{amount}</Text>
@@ -255,9 +216,7 @@ function MenuList() {
               Excluir Lista
             </AlertDialogHeader>
 
-            <AlertDialogBody>
-              Deseja realmente deletar a lista?
-            </AlertDialogBody>
+            <AlertDialogBody>Deseja realmente deletar a lista?</AlertDialogBody>
 
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onClose}>

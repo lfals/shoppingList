@@ -32,16 +32,32 @@ import {
   TwitterLogoIcon,
 } from '@radix-ui/react-icons';
 import NextLink from 'next/link';
+import { useEffect } from 'react';
+import { useRecoilState } from 'recoil';
+import treatOldList from '../functions/handle.old.list.function';
+import { listRecoilContext } from '../hooks/list.hook';
 import useAuth from '../hooks/user.hook';
 import MenuList from './menu.component';
+const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
 
 const Layout = ({ children }: any) => {
   const [user, signIn, logOut] = useAuth();
+  const [, setListRecoil] = useRecoilState(listRecoilContext);
+
   const {
     isOpen: isDrawerOpen,
     onOpen: onDrawerOpen,
     onClose: onDrawerClose,
   } = useDisclosure();
+
+  useEffect(() => {
+    const checkIfItemHasShowField = treatOldList();
+
+    if (checkIfItemHasShowField) {
+      setListRecoil(checkIfItemHasShowField);
+      localStorage.setItem(ENV, JSON.stringify(checkIfItemHasShowField));
+    }
+  }, [user]);
 
   return (
     <>
