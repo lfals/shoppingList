@@ -142,12 +142,12 @@ const Layout = ({ children }: any) => {
             </NextLink>
             {user ? (
               <Menu>
-                <MenuButton
-                
-                  as={Avatar}
-                  src={user.photoURL ? user.photoURL : ''}
-                  name={user.displayName ? user.displayName : 'Foto de perfil'}
-                ></MenuButton>
+                <MenuButton>
+                  <Avatar
+                    src={user.photoURL ? user.photoURL : ''}
+                    name={user.displayName ? user.displayName : 'Foto de perfil'}
+                  />
+                </MenuButton>
                 <LoginMenu>
                   <MenuGroup defaultValue="asc">
                     <MenuItem onClick={() => logOut()} icon={<ExitIcon />}>
