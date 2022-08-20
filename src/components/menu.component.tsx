@@ -31,7 +31,7 @@ import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
 import { IList } from '../interfaces/list.interface';
 import useLists from '../hooks/save.list.hook';
 
-function MenuList() {
+const MenuList = () => {
   const [show, setShow] = useState(false);
   const inputRef: any = useRef<any>(null);
   const [toRemoveId, setToRemoveId] = useState('');
@@ -124,7 +124,7 @@ function MenuList() {
 
   if (!listRecoil) {
     router.replace('/');
-    return;
+    return null;
   }
 
   return (

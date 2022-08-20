@@ -134,14 +134,16 @@ const Layout = ({ children }: any) => {
                     filter: 'brightness(0) invert(1)',
                     pointerEvents: 'none',
                   }}
-                  w="100px"
+                  w={["100px", '120px', '140px', '160px', '180px']}
                   alt="logo"
+                  mr={'7'}
                 />
               </Link>
             </NextLink>
             {user ? (
               <Menu>
                 <MenuButton
+                
                   as={Avatar}
                   src={user.photoURL ? user.photoURL : ''}
                   name={user.displayName ? user.displayName : 'Foto de perfil'}
