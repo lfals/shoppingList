@@ -9,6 +9,7 @@ import {
   DrawerOverlay,
   Flex,
   Grid,
+  MenuList as LoginMenu,
   GridItem,
   Hide,
   HStack,
@@ -17,70 +18,74 @@ import {
   Link,
   Show,
   useDisclosure,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuGroup,
+  Avatar,
 } from '@chakra-ui/react';
-import { Cross2Icon, HamburgerMenuIcon } from '@radix-ui/react-icons';
+import {
+  Cross2Icon,
+  EnterIcon,
+  ExitIcon,
+  HamburgerMenuIcon,
+  TwitterLogoIcon,
+} from '@radix-ui/react-icons';
+import { onValue, ref } from 'firebase/database';
 import NextLink from 'next/link';
-import { useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
-import { listRecoilContext } from '../hooks/list.hook';
-import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
+import { useEffect } from 'react';
+import treatOldList from '../functions/handle.old.list.function';
+import useLists from '../hooks/save.list.hook';
+import useAuth from '../hooks/user.hook';
 import { IList } from '../interfaces/list.interface';
+import { db } from '../services/firebase.service';
 import MenuList from './menu.component';
 
 const Layout = ({ children }: any) => {
-  const [, setLists] = useState([] as IList[]);
-  const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
-  const [, setSumAmount] = useSumListsTotalAmountHook();
+  const [user, signIn, logOut] = useAuth();
+  const [, setLists] = useLists();
+
   const {
     isOpen: isDrawerOpen,
     onOpen: onDrawerOpen,
     onClose: onDrawerClose,
   } = useDisclosure();
 
-  const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
-
-  useEffect(() => {
-    const lists = localStorage.getItem(ENV);
-
-    if (lists) {
-      const parsedLists: Array<IList> = JSON.parse(lists);
-      const checkIfItemHasShowField = parsedLists.map((list) => {
-        if (list.show === undefined) {
-          list = {
-            ...list,
-            show: true,
-          };
-        }
+  function treatListsFromFB(data: IList[]) {
+    const treated = data.map((list) => {
+      if (list.items === undefined) {
         list = {
           ...list,
-          items: list.items.map((item) => {
-            if (item.show === undefined) {
-              item = {
-                ...item,
-                show: true,
-              };
-            }
-            if (item.qtd === undefined) {
-              item = {
-                ...item,
-                qtd: 1,
-              };
-            }
-            return item;
-          }),
+          items: [],
         };
-        return list;
-      });
+      }
+      return list;
+    });
+    setLists(treated);
+  }
 
-      setLists(checkIfItemHasShowField);
-      setListRecoil(checkIfItemHasShowField);
-      localStorage.setItem(ENV, JSON.stringify(checkIfItemHasShowField));
-    }
-  }, []);
+  function getCloudList(userId: string) {
+    const starCountRef = ref(db, 'users/' + userId);
+    onValue(starCountRef, (snapshot) => {
+      const val = snapshot.val();
+      const data = val;
+      if (data) {
+        treatListsFromFB(data.data);
+      }
+    });
+  }
 
   useEffect(() => {
-    setSumAmount(listRecoil);
-  }, [listRecoil]);
+    if (user) {
+      getCloudList(user.uid);
+      return;
+    }
+
+    const checkIfItemHasShowField = treatOldList();
+    if (checkIfItemHasShowField) {
+      setLists(checkIfItemHasShowField);
+    }
+  }, [user]);
 
   return (
     <>
@@ -110,19 +115,6 @@ const Layout = ({ children }: any) => {
           bgColor="#20212C"
         >
           <HStack h={'100%'} px={3} justifyContent="space-between">
-            <NextLink href={'/'}>
-              <Link>
-                <Image
-                  src="/assets/images/logo.png"
-                  style={{
-                    filter: 'brightness(0) invert(1)',
-                    pointerEvents: 'none',
-                  }}
-                  alt="logo"
-                />
-              </Link>
-            </NextLink>
-
             <Show breakpoint="(max-width: 760px)">
               <Flex alignItems={'center'} h="100%" p={'0 12px'}>
                 <Button
@@ -134,6 +126,60 @@ const Layout = ({ children }: any) => {
                 </Button>
               </Flex>
             </Show>
+            <NextLink href={'/'}>
+              <Link>
+                <Image
+                  src="/assets/images/logo.png"
+                  style={{
+                    filter: 'brightness(0) invert(1)',
+                    pointerEvents: 'none',
+                  }}
+                  w={["100px", '120px', '140px', '160px', '180px']}
+                  alt="logo"
+                  mr={'7'}
+                />
+              </Link>
+            </NextLink>
+            {user ? (
+              <Menu>
+                <MenuButton>
+                  <Avatar
+                    src={user.photoURL ? user.photoURL : ''}
+                    name={user.displayName ? user.displayName : 'Foto de perfil'}
+                  />
+                </MenuButton>
+                <LoginMenu>
+                  <MenuGroup defaultValue="asc">
+                    <MenuItem onClick={() => logOut()} icon={<ExitIcon />}>
+                      Sair
+                    </MenuItem>
+                  </MenuGroup>
+                </LoginMenu>
+              </Menu>
+            ) : (
+              <Menu>
+                <MenuButton as={Button} variant="ghost">
+                  <Icon as={EnterIcon} fontSize="20" />
+                </MenuButton>
+                <LoginMenu>
+                  <MenuGroup defaultValue="asc" title="Login">
+                    <MenuItem
+                      onClick={() => signIn.google()}
+                      icon={<TwitterLogoIcon />}
+                    >
+                      Google
+                    </MenuItem>
+
+                    <MenuItem
+                      onClick={() => signIn.twitter()}
+                      icon={<TwitterLogoIcon />}
+                    >
+                      Twitter
+                    </MenuItem>
+                  </MenuGroup>
+                </LoginMenu>
+              </Menu>
+            )}
           </HStack>
         </GridItem>
 

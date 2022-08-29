@@ -33,6 +33,8 @@ import {
   NumberInput,
   NumberInputField,
   Show,
+  HStack,
+  useToast,
 } from '@chakra-ui/react';
 
 import { Field, Formik } from 'formik';
@@ -47,34 +49,34 @@ import {
   Pencil2Icon,
   TrashIcon,
   PlusIcon,
+  CounterClockwiseClockIcon,
+  QuestionMarkCircledIcon,
 } from '@radix-ui/react-icons';
-import { useRecoilState } from 'recoil';
-import { listRecoilContext } from '../hooks/list.hook';
 import Head from 'next/head';
 import searchImage from '../functions/search.function';
 import { IList, IProduct } from '../interfaces/list.interface';
 import useSumItemsTotalAmountHook from '../hooks/items.amount.hook';
+import useLists from '../hooks/save.list.hook';
 
-const List: NextPage = ({ children }: any) => {
+const List: NextPage = () => {
   const router = useRouter();
+  const toast = useToast();
   const [list, setList] = useState({} as IList);
-  const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
+  const [listRecoil, setLists] = useLists();
   const [itemsTotalSum, setItemsToSum] = useSumItemsTotalAmountHook();
   const [listTitle, setListTitle] = useState(list.name);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [price, setPrice] = useState('R$ 0,00');
   const [items, setItems] = useState([] as IProduct[]);
-  const [localItemsArray, setLocalItems] = useState([] as any);
   const [itemToEdit, setItemToEdit] = useState({} as IProduct);
   const id = router.query.id;
-
-  const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
 
   const defaultValue = {
     id: '',
     name: '',
     store: '',
     link: '',
+    image: '',
     qtd: 1,
     show: true,
     price: 'R$ 0,00',
@@ -102,14 +104,10 @@ const List: NextPage = ({ children }: any) => {
   }
 
   async function createItem(values: any) {
-    if (!localItemsArray) {
-      console.error('storage vazio, fez merda aí');
-      return;
-    }
+    let imageLink = values.image;
+    if (!imageLink) imageLink = await searchImage(values.name);
 
-    const imageLink = await searchImage(values.name);
-
-    const mapped = localItemsArray.map((item: IList) => {
+    const mapped = listRecoil.map((item: IList) => {
       if (item.id === id) {
         item = {
           ...item,
@@ -132,15 +130,13 @@ const List: NextPage = ({ children }: any) => {
     const storageList = mapped.filter((item: IList) => item.id === id);
 
     setItemsToSum(storageList[0]?.items);
-    setLocalItems(mapped);
     setItems(storageList[0].items);
-    localStorage.setItem(ENV, JSON.stringify(mapped));
-    setListRecoil(mapped);
+    setLists(mapped);
     setPrice('R$ 0,00');
     onClose();
   }
 
-  function editItem(values: IProduct) {
+  async function editItem(values: IProduct) {
     const filtered = items.filter(
       (item: IProduct) => item.id !== itemToEdit?.id
     );
@@ -155,7 +151,10 @@ const List: NextPage = ({ children }: any) => {
       },
     ]);
 
-    const newArray = localItemsArray.map((item: IList) => {
+    let imageLink = values.image;
+    if (!imageLink) imageLink = await searchImage(values.name);
+
+    const newArray = listRecoil.map((item: IList) => {
       if (item.id === id) {
         item = {
           ...item,
@@ -163,7 +162,7 @@ const List: NextPage = ({ children }: any) => {
             ...filtered,
             {
               ...values,
-              image: itemToEdit.image,
+              image: imageLink,
               price: price,
               id: itemToEdit.id,
               show: itemToEdit.show,
@@ -186,15 +185,15 @@ const List: NextPage = ({ children }: any) => {
       },
     ]);
 
-    setListRecoil(newArray);
-    localStorage.setItem(ENV, JSON.stringify(newArray));
+    setLists(newArray);
     onClose();
   }
 
   function handleDeleteItem(productId: string) {
+    const oldItems = items;
+    const oldList = listRecoil;
     const newItems = items.filter((item: IProduct) => item.id !== productId);
-
-    const newArray = localItemsArray.map((item: IList) => {
+    const newArray = listRecoil.map((item: IList) => {
       if (item.id === id) {
         item = {
           ...item,
@@ -204,10 +203,32 @@ const List: NextPage = ({ children }: any) => {
       return item;
     });
 
-    localStorage.setItem(ENV, JSON.stringify(newArray));
     setItems(newItems);
-    setLocalItems(newArray);
-    setListRecoil(newArray);
+    setLists(newArray);
+    toast.closeAll();
+    toast({
+      position: 'bottom-right',
+      duration: 5000,
+      render: () => (
+        <HStack justifyContent={'end'} p={4}>
+          <Button
+            leftIcon={<CounterClockwiseClockIcon />}
+            colorScheme="red"
+            onClick={() => undoDelete(oldList, oldItems)}
+          >
+            Desfazer
+          </Button>
+        </HStack>
+      ),
+    });
+  }
+
+  function undoDelete(oldList: IList[], oldItems: IProduct[]) {
+    if (oldList !== undefined) {
+      setItems(oldItems);
+      setLists(oldList);
+      toast.closeAll();
+    }
   }
 
   function handleEdit(productId: string) {
@@ -222,7 +243,7 @@ const List: NextPage = ({ children }: any) => {
       setListTitle(list.name);
       return;
     }
-    const newList = localItemsArray.map((list: IList) => {
+    const newList = listRecoil.map((list: IList) => {
       if (list.id === id) {
         list = {
           ...list,
@@ -232,9 +253,7 @@ const List: NextPage = ({ children }: any) => {
       return list;
     });
 
-    setLocalItems(newList);
-    localStorage.setItem(ENV, JSON.stringify(newList));
-    setListRecoil(newList);
+    setLists(newList);
   }
 
   function togglePriceView(e: any, itemId: string) {
@@ -260,8 +279,7 @@ const List: NextPage = ({ children }: any) => {
 
     setItems(newItems);
     setItemsToSum(newItems);
-    setListRecoil(newList);
-    localStorage.setItem(ENV, JSON.stringify(newList));
+    setLists(newList);
   }
 
   function changeItemQtd(qtd: any, itemId: string) {
@@ -287,8 +305,7 @@ const List: NextPage = ({ children }: any) => {
 
     setItemsToSum(newItems);
     setItems(newItems);
-    setListRecoil(newList);
-    localStorage.setItem(ENV, JSON.stringify(newList));
+    setLists(newList);
   }
 
   function multiplyByAmount(qtd: number, value: string) {
@@ -300,14 +317,9 @@ const List: NextPage = ({ children }: any) => {
   }
 
   useEffect(() => {
-    const localStorageLists = localStorage.getItem(ENV);
-
-    if (!localStorageLists) {
-      router.replace('/');
-      return;
-    }
-    const lists = JSON.parse(localStorageLists);
-    const storageList: IList[] = lists.filter((item: IList) => item.id === id);
+    const storageList: IList[] = listRecoil.filter(
+      (item: IList) => item.id === id
+    );
     if (!storageList[0]) {
       return;
     }
@@ -315,7 +327,6 @@ const List: NextPage = ({ children }: any) => {
     setItemsToSum(storageList[0].items);
     setList(storageList[0]);
     setListTitle(storageList[0].name);
-    setLocalItems(lists);
     setItems(storageList[0]?.items);
   }, [router.query.id, listRecoil]);
 
@@ -340,7 +351,6 @@ const List: NextPage = ({ children }: any) => {
             value={listTitle}
             color={'#fff'}
             fontSize={['4xl', '5xl', '5xl', '6xl']}
-
             fontWeight="bold"
             onChange={(nextValue: string) => setListTitle(nextValue)}
             onSubmit={(nextValue: string) => updateListTitle(nextValue)}
@@ -476,7 +486,10 @@ const List: NextPage = ({ children }: any) => {
                           borderRadius={'12px'}
                           src={product.image}
                           bgColor="white"
+                          alt="Imagem do produto"
+                          fallbackSrc="/assets/images/no-image.jfif"
                         />
+
                         <Box width={'100%'}>
                           {product.store && (
                             <Link href={product.link} target="_blank">
@@ -577,6 +590,7 @@ const List: NextPage = ({ children }: any) => {
             name: itemToEdit?.name,
             store: itemToEdit?.store,
             link: itemToEdit?.link,
+            image: itemToEdit?.image,
             price: itemToEdit?.price,
           }}
           onSubmit={(values) => handleSaveItem(values)}
@@ -608,9 +622,28 @@ const List: NextPage = ({ children }: any) => {
                       <FormLabel>Link</FormLabel>
                       <Field
                         as={Input}
-                        placeholder="Link"
+                        placeholder="Link para o produto"
                         name="link"
                         type="url"
+                      />
+                    </FormControl>
+                    <FormControl>
+                      <FormLabel>
+                        Imagem
+                        <Tooltip
+                          label={
+                            'Nosso site utiliza o sistema de pesquisa do google para inserir a imagem de forma dinâmica. Caso queira colocar uma imagem específica insira o endereço dela abaixo.'
+                          }
+                          placement="top"
+                          hasArrow
+                        >
+                          <Icon ml={2} as={QuestionMarkCircledIcon} />
+                        </Tooltip>
+                      </FormLabel>
+                      <Field
+                        as={Input}
+                        placeholder="Endereço da imagem"
+                        name="image"
                       />
                     </FormControl>
                     <FormControl>

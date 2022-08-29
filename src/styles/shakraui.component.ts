@@ -32,10 +32,16 @@ export const Button: ComponentStyleConfig = {
       _hover: {
         color: 'black',
       },
+      _active: {
+        color: 'black',
+      },
     },
     ghost: {
       color: 'white',
       _hover: {
+        color: 'black',
+      },
+      _active: {
         color: 'black',
       },
     },
