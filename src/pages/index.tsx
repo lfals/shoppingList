@@ -9,10 +9,9 @@ import { listRecoilContext } from '../hooks/list.hook';
 import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
 
 const List: NextPage = () => {
-  const [amount, setSumAmount] = useSumListsTotalAmountHook();
+  const [amount] = useSumListsTotalAmountHook();
 
-  const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
-  const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
+  const [listRecoil] = useRecoilState(listRecoilContext);
 
   function treatCurrency(value: any, cents: boolean) {
     if (isNaN(value))
@@ -49,15 +48,6 @@ const List: NextPage = () => {
       initialValue
     );
   }
-
-  useEffect(() => {
-    const items = localStorage.getItem(ENV);
-    if (items) setListRecoil(JSON.parse(items));
-  }, []);
-
-  useEffect(() => {
-    setSumAmount(listRecoil);
-  }, [listRecoil]);
 
   return (
     <>

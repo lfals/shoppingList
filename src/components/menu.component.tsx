@@ -15,36 +15,33 @@ import {
   Switch,
   Text,
   useDisclosure,
+  useToast,
   VStack,
 } from '@chakra-ui/react';
-import { PlusIcon, TrashIcon } from '@radix-ui/react-icons';
+import {
+  PlusIcon,
+  TrashIcon,
+  CounterClockwiseClockIcon,
+} from '@radix-ui/react-icons';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
-import { useRecoilState } from 'recoil';
 import { uuid } from 'uuidv4';
-import { listRecoilContext } from '../hooks/list.hook';
 import useSumListsTotalAmountHook from '../hooks/lists.amount.hook';
-import { IList, IProduct } from '../interfaces/list.interface';
+import { IList } from '../interfaces/list.interface';
+import useLists from '../hooks/save.list.hook';
 
-function MenuList() {
+const MenuList = () => {
   const [show, setShow] = useState(false);
-  const [lists, setLists] = useState([] as IList[]);
+  const inputRef: any = useRef<any>(null);
   const [toRemoveId, setToRemoveId] = useState('');
-  const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
-  const [amount, setSumAmount] = useSumListsTotalAmountHook();
+  const [listRecoil, setLists] = useLists();
+  const [amount] = useSumListsTotalAmountHook();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const toast = useToast();
   const cancelRef = useRef() as any;
-
   const router = useRouter();
-
-  const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
-
-  function handleList(data: any) {
-    localStorage.setItem(ENV, JSON.stringify(data));
-    setLists(data);
-  }
 
   function handleEnterPress(e: any) {
     const name: string = e.target.value;
@@ -60,18 +57,10 @@ function MenuList() {
         },
       ];
 
-      const currentStorage = localStorage.getItem(ENV);
-
-      if (currentStorage) {
-        const parsedStorage = JSON.parse(currentStorage);
-
-        handleList([...parsedStorage, ...defautList]);
-        setListRecoil([...parsedStorage, ...defautList]);
-      } else {
-        handleList(defautList);
-      }
-      router.push(`/${id}`);
+      setLists([...listRecoil, ...defautList]);
+      onClose();
       setShow(false);
+      router.push(`/${id}`);
     }
   }
 
@@ -81,7 +70,6 @@ function MenuList() {
   }
 
   function handleListSwitch(e: any, id: string) {
-    console.log(e.target.checked, id);
     const newList = listRecoil.map((list) => {
       if (list.id === id) {
         list = {
@@ -91,64 +79,53 @@ function MenuList() {
       }
       return list;
     });
-    setListRecoil(newList);
     setLists(newList);
-    localStorage.setItem(ENV, JSON.stringify(newList));
   }
 
   function handleDelete() {
-    const newLists = lists.filter((item) => item.id !== toRemoveId);
-    handleList(newLists);
-    setListRecoil(newLists);
+    const newLists = listRecoil.filter((item) => item.id !== toRemoveId);
+    const newDeletedList = listRecoil.filter((item) => item.id === toRemoveId);
 
+    setLists(newLists);
     onClose();
     if (router.query.id === toRemoveId) {
       router.push('/');
     }
+    toast({
+      position: 'bottom-right',
+      duration: 5000,
+      render: () => (
+        <HStack justifyContent={'end'} p={4}>
+          <Button
+            leftIcon={<CounterClockwiseClockIcon />}
+            colorScheme="red"
+            onClick={() => undoDelete(newLists, newDeletedList)}
+          >
+            Desfazer
+          </Button>
+        </HStack>
+      ),
+    });
+  }
+
+  function undoDelete(newLists: IList[], newDeletedList: IList[]) {
+    if (newDeletedList !== undefined) {
+      const prevList = [...newLists, ...newDeletedList];
+      setLists(prevList);
+      toast.closeAll();
+    }
   }
 
   useEffect(() => {
-    const lists = localStorage.getItem(ENV);
-
-    if (lists) {
-      const parsedLists: Array<IList> = JSON.parse(lists);
-      const checkIfItemHasShowField = parsedLists.map((list) => {
-        if (list.show === undefined) {
-          list = {
-            ...list,
-            show: true,
-          };
-        }
-        list = {
-          ...list,
-          items: list.items.map((item) => {
-            if (item.show === undefined) {
-              item = {
-                ...item,
-                show: true,
-              };
-            }
-            if (item.qtd === undefined) {
-              item = {
-                ...item,
-                qtd: 1,
-              };
-            }
-            return item;
-          }),
-        };
-        return list;
-      });
-
-      setLists(checkIfItemHasShowField);
-      setListRecoil(checkIfItemHasShowField);
-      localStorage.setItem(ENV, JSON.stringify(checkIfItemHasShowField));
+    if (inputRef.current !== null) {
+      inputRef.current.focus();
     }
-  }, []);
+  }, [show]);
 
-  useEffect(() => {
-    setSumAmount(listRecoil);
-  }, [listRecoil]);
+  if (!listRecoil) {
+    router.replace('/');
+    return null;
+  }
 
   return (
     <>
@@ -204,10 +181,11 @@ function MenuList() {
               variant="flushed"
               placeholder="Nome da lista"
               onKeyDown={(e) => handleEnterPress(e)}
+              ref={inputRef}
             />
           )}
         </VStack>
-        {lists.length > 0 && (
+        {listRecoil.length > 0 && (
           <HStack w={'100%'} mt={'auto'} justifyContent="space-between">
             <Text fontSize={'xl'}>Valor total:</Text>
             <Text fontSize={'xl'}>{amount}</Text>
@@ -227,9 +205,7 @@ function MenuList() {
               Excluir Lista
             </AlertDialogHeader>
 
-            <AlertDialogBody>
-              Você tem certeza? Você não pode desfazer esta ação depois.
-            </AlertDialogBody>
+            <AlertDialogBody>Deseja realmente deletar a lista?</AlertDialogBody>
 
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onClose}>
