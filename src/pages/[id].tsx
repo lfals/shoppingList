@@ -104,8 +104,15 @@ const List: NextPage = () => {
   }
 
   async function createItem(values: any) {
+
+
     let imageLink = values.image;
+    let store = values.store
     if (!imageLink) imageLink = await searchImage(values.name);
+    if (!values.store) {
+      store = values.link.split('.')[1]
+    }
+
 
     const mapped = listRecoil.map((item: IList) => {
       if (item.id === id) {
@@ -116,6 +123,7 @@ const List: NextPage = () => {
             {
               id: uuid(),
               ...values,
+              store,
               price: price,
               image: imageLink,
               show: true,

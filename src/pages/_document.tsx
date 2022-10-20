@@ -18,6 +18,15 @@ export default function Document() {
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="627" />
         <meta property="og:type" content="website" />
+        <link rel="manifest" href="/manifest.json" />
+        <link
+          href="/favicon.png"
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+        />
+        <link rel="apple-touch-icon" href="/favicon.png"></link>
+        <meta name="theme-color" content="#1A202C" />
       </Head>
       <body>
         <Main />
