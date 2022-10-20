@@ -6,7 +6,7 @@
     "display": "fullscreen",
     "orientation": "portrait",
     "scope": "/",
-    "start_url": "/sw.js",
+    "start_url": "/",
     "icons": [
         {
             "src": "/icons/maskable_icon_x72.png",
