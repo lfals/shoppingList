@@ -40,6 +40,7 @@ import useAuth from '../hooks/user.hook';
 import { IList } from '../interfaces/list.interface';
 import { db } from '../services/firebase.service';
 import MenuList from './menu.component';
+import { AiOutlineGoogle } from 'react-icons/ai'
 
 const Layout = ({ children }: any) => {
   const [user, signIn, logOut] = useAuth();
@@ -165,7 +166,7 @@ const Layout = ({ children }: any) => {
                   <MenuGroup defaultValue="asc" title="Login">
                     <MenuItem
                       onClick={() => signIn.google()}
-                      icon={<TwitterLogoIcon />}
+                      icon={<AiOutlineGoogle />}
                     >
                       Google
                     </MenuItem>
