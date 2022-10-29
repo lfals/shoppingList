@@ -29,6 +29,7 @@ import {
   TrashIcon,
   CounterClockwiseClockIcon,
   DropdownMenuIcon,
+  HamburgerMenuIcon,
 } from '@radix-ui/react-icons';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -184,7 +185,7 @@ const MenuList = () => {
                   <MenuButton as={Button}
                     p={0}
                     variant="ghost">
-                    <Icon fontSize={'xl'} as={DropdownMenuIcon} />
+                    <Icon fontSize={'xl'} as={HamburgerMenuIcon} />
                   </MenuButton>
                   <ContextMenu>
                     {/* <MenuGroup title='Profile'>
