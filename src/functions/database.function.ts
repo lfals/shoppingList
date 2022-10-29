@@ -3,7 +3,7 @@ import { IList } from '../interfaces/list.interface';
 import { db } from '../services/firebase.service';
 
 function writeUserData(userId: string, data: IList[]) {
-  console.log('save to database', data);
+  console.log('save to database', data, userId);
 
   set(ref(db, 'users/' + userId), {
     data,

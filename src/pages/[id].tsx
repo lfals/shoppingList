@@ -110,8 +110,9 @@ const List: NextPage = () => {
     let store = values.store
     if (!imageLink) imageLink = await searchImage(values.name);
     if (!values.store) {
-      store = values.link.split('.')[1]
+      store = values.link.split('.')[1] ? values.link.split('.')[1] : ""
     }
+
 
 
     const mapped = listRecoil.map((item: IList) => {

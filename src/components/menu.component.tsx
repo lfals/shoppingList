@@ -12,6 +12,12 @@ import {
   Icon,
   Input,
   Link,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuList as ContextMenu,
+  MenuGroup,
+  MenuItem,
   Switch,
   Text,
   useDisclosure,
@@ -22,6 +28,7 @@ import {
   PlusIcon,
   TrashIcon,
   CounterClockwiseClockIcon,
+  DropdownMenuIcon,
 } from '@radix-ui/react-icons';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -80,6 +87,18 @@ const MenuList = () => {
       return list;
     });
     setLists(newList);
+  }
+
+  function handleCopy(id: string) {
+    const selectedList = listRecoil.filter((item) => item.id === id)[0]
+    const listToAdd = {
+      ...selectedList,
+      id: uuid(),
+      name: `${selectedList.name} (Copy)`
+    }
+    console.log(listToAdd);
+
+    setLists([...listRecoil, listToAdd])
   }
 
   function handleDelete() {
@@ -160,19 +179,48 @@ const MenuList = () => {
                     </Text>
                   </Link>
                 </NextLink>
-                <Switch
-                  mr={2}
-                  defaultChecked={list.show}
-                  isChecked={list.show}
-                  onChange={(e) => handleListSwitch(e, list.id)}
-                />
-                <Button
-                  p={0}
-                  variant="ghost"
-                  onClick={() => handleDeleteButton(list.id)}
-                >
-                  <Icon fontSize={'xl'} as={TrashIcon} />
-                </Button>
+
+                <Menu>
+                  <MenuButton as={Button}
+                    p={0}
+                    variant="ghost">
+                    <Icon fontSize={'xl'} as={DropdownMenuIcon} />
+                  </MenuButton>
+                  <ContextMenu>
+                    {/* <MenuGroup title='Profile'>
+                      <MenuItem>My Account</MenuItem>
+                      <MenuItem>Payments </MenuItem>
+                    </MenuGroup>
+                    <MenuDivider /> */}
+                    <MenuGroup>
+                      <MenuItem
+                        justifyContent={"space-between"}
+                        onClick={() => handleCopy(list.id)}
+                      >
+                        Duplicar
+                      </MenuItem>
+
+                      <MenuItem
+                        closeOnSelect={false}
+                        justifyContent={"space-between"}
+
+                      >Desabilitar
+                        <Switch
+                          mr={2}
+                          defaultChecked={list.show}
+                          isChecked={list.show}
+                          onChange={(e) => handleListSwitch(e, list.id)}
+                        />
+                      </MenuItem>
+                      <MenuItem
+                        justifyContent={"space-between"}
+                        onClick={() => handleDeleteButton(list.id)}
+                      >
+                        Excluir
+                      </MenuItem>
+                    </MenuGroup>
+                  </ContextMenu>
+                </Menu>
               </Flex>
             );
           })}

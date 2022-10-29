@@ -10,7 +10,7 @@ const ENV = process.env.TOKEN ? process.env.TOKEN : '@shoppinglist';
 function useLists() {
   const [listRecoil, setListRecoil] = useRecoilState(listRecoilContext);
   const [user] = useAuth();
-  function setLists(lists: IList[]) {
+  async function setLists(lists: IList[]) {
     let toSortItems: Array<IProduct> = [];
     const sortedLists = lists.map(list => {
       toSortItems = list.items.slice().sort((a, b) => a.name.localeCompare(b.name));
@@ -19,7 +19,7 @@ function useLists() {
 
     setListRecoil(sortedLists);
     if (user) {
-      writeUserData(user.uid, sortedLists);
+      await writeUserData(user.uid, sortedLists);
       return;
     }
 
