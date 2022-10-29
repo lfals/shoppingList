@@ -8,8 +8,8 @@ export default function Document() {
         <meta property="og:title" content="To buy List" />
         <meta
           property="og:image"
-          content="https://tobuylist.fluma.dev/thumbnail.png"
-        />
+          content="/api/og"
+        />  
         <meta
           property="og:description"
           content="A lista de compras que faltava"
