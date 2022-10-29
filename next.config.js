@@ -7,13 +7,10 @@ const withPWA = require('next-pwa')({
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  env: {
-    customKey: 'my-value',
-  },
 };
 
 
-module.exports = withPWA({
+export default withPWA({
   nextConfig
 })
 
