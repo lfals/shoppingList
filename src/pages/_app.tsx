@@ -30,23 +30,25 @@ const theme = extendTheme({
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <Script
-        async
-        strategy="afterInteractive"
-        src="https://www.googletagmanager.com/gtag/js?id=G-7NEKCFJ0EB"
-      ></Script>
-      <Script id="gtag" strategy="afterInteractive">
-        {`
-       window.dataLayer = window.dataLayer || [];
-       function gtag(){dataLayer.push(arguments);}
-       gtag('js', new Date());
-
-       gtag('config', 'G-7NEKCFJ0EB');
-       `}
-      </Script>
       <Head>
         <title>To buy List</title>
       </Head>
+      <div>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'GA_MEASUREMENT_ID');
+        `}
+        </Script>
+      </div>
+
       <RecoilRoot>
         <ChakraProvider theme={theme}>
           <Component {...pageProps} />
