@@ -1,5 +1,4 @@
 import { Html, Head, Main, NextScript } from 'next/document';
-import Script from 'next/script';
 export default function Document() {
   return (
     <Html>
@@ -29,19 +28,7 @@ export default function Document() {
         <link rel="apple-touch-icon" href="/favicon.png"></link>
         <meta name="theme-color" content="#1A202C" />
       </Head>
-      <Script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-7NEKCFJ0EB"
-      ></Script>
-      <Script id="gtag">
-        {`
-       window.dataLayer = window.dataLayer || [];
-       function gtag(){dataLayer.push(arguments);}
-       gtag('js', new Date());
-
-       gtag('config', 'G-7NEKCFJ0EB');
-       `}
-      </Script>
+      
       <body>
         <Main />
         <NextScript />
