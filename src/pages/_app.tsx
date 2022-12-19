@@ -30,29 +30,26 @@ const theme = extendTheme({
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <Head>
-        <title>To buy List</title>
-      </Head>
-      <div>
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-7NEKCFJ0EB"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-         window.dataLayer = window.dataLayer || [];
-         function gtag(){dataLayer.push(arguments);}
-         gtag('js', new Date());
-       
-         gtag('config', 'G-7NEKCFJ0EB');
-
-          
-        `}
-        </Script>
-      </div>
-
       <RecoilRoot>
         <ChakraProvider theme={theme}>
+          <Head>
+            <title>To buy List</title>
+          </Head>
+          <>
+            <Script
+              src="https://www.googletagmanager.com/gtag/js?id=G-7NEKCFJ0EB"
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                
+                  gtag('config', 'G-7NEKCFJ0EB');
+        `}
+            </Script>
+          </>
           <Component {...pageProps} />
         </ChakraProvider>
       </RecoilRoot>
