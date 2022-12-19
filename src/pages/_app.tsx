@@ -11,6 +11,7 @@ import {
   AccordionItem,
 } from '../styles/shakraui.component';
 import { RecoilRoot } from 'recoil';
+import Head from 'next/head';
 
 const theme = extendTheme({
   components: {
@@ -26,11 +27,16 @@ const theme = extendTheme({
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <RecoilRoot>
-      <ChakraProvider theme={theme}>
-        <Component {...pageProps} />
-      </ChakraProvider>
-    </RecoilRoot>
+    <>
+      <Head>
+        <title>To buy List</title>
+      </Head>
+      <RecoilRoot>
+        <ChakraProvider theme={theme}>
+          <Component {...pageProps} />
+        </ChakraProvider>
+      </RecoilRoot>
+    </>
   );
 }
 
