@@ -35,16 +35,18 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <div>
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"
+          src="https://www.googletagmanager.com/gtag/js?id=G-7NEKCFJ0EB"
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){window.dataLayer.push(arguments);}
-          gtag('js', new Date());
+         window.dataLayer = window.dataLayer || [];
+         function gtag(){dataLayer.push(arguments);}
+         gtag('js', new Date());
+       
+         gtag('config', 'G-7NEKCFJ0EB');
 
-          gtag('config', 'GA_MEASUREMENT_ID');
+          
         `}
         </Script>
       </div>
