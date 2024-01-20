@@ -5,13 +5,14 @@ import { getAuth } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyB5FV37qeu5aQ6pZHDKyiOwF26U4Puq5yw',
-  authDomain: 'shoppinglist-359121.firebaseapp.com',
-  databaseURL: 'https://shoppinglist-359121-default-rtdb.firebaseio.com',
-  projectId: 'shoppinglist-359121',
-  storageBucket: 'shoppinglist-359121.appspot.com',
-  messagingSenderId: '593451657918',
-  appId: '1:593451657918:web:3c2eabb39883d43e224cef',
+  databaseURL: 'https://robuylist-old-default-rtdb.firebaseio.com',
+  
+   apiKey: "AIzaSyB_cB2a4CvB-dPmcg-88d59aVv7WwRH2UA",
+  authDomain: "robuylist-old.firebaseapp.com",
+  projectId: "robuylist-old",
+  storageBucket: "robuylist-old.appspot.com",
+  messagingSenderId: "115806901043",
+  appId: "1:115806901043:web:d85073225a860425faa446"
 };
 
 const app = initializeApp(firebaseConfig);
